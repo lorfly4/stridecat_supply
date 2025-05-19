@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Stridecat Supply - History Pembelian</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css" />
+    <!-- AdminLTE -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css" />
+  </head>
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      <!-- Navbar -->
+      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button"
+              ><i class="fas fa-bars"></i
+            ></a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#">
+              <i class="far fa-user"></i>
+              <span><%= users.nama ? users.nama : 'Guest' %></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+              <a href="/profil" class="dropdown-item">
+                <i class="fas fa-user mr-2"></i> Profil
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="/logout" class="dropdown-item">
+                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="/landing" class="brand-link">
+          <span class="brand-text font-weight-light">Stridecat Supply</span>
+        </a>
+        <div class="sidebar">
+          <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+              <img
+                src="<%= users.foto ? users.foto : '/img/avatar.png' %>"
+                class="img-circle elevation-2"
+                alt="User Image"
+              />
+            </div>
+            <div class="info">
+              <a href="#" class="d-block"
+                ><%= users.nama ? users.nama : 'Guest' %></a
+              >
+            </div>
+          </div>
+          <nav class="mt-2">
+            <ul
+              class="nav nav-pills nav-sidebar flex-column"
+              data-widget="treeview"
+              role="menu"
+            >
+              <li class="nav-item">
+                <a href="/landing" class="nav-link active">
+                  <i class="nav-icon fas fa-home"></i>
+                  <p>Home</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/profil" class="nav-link">
+                  <i class="nav-icon fas fa-user"></i>
+                  <p>Profil</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/produk" class="nav-link">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>Produk</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="/history" class="nav-link">
+                  <i class="nav-icon fas fa-book"></i>
+                  <p>History Pembelian</p>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <div class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2 align-items-center">
+              <div class="col-sm-6">
+                <h1 class="m-0">History Pembelian</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <section class="content">
+          <div class="container-fluid">
+            <div class="card">
+              <div class="card-body">
+                <table class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>No</th>
+                      <th>Nama Pembeli</th>
+                      <th>Nama Produk</th>
+                      <th>Harga</th>
+                      <th>Foto Produk</th>
+                      <th>Status</th>
+                      <th>Tanggal</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (history && history.length > 0) { %> <%
+                    history.forEach(function(item, idx) { %>
+                    <tr>
+                      <td><%= idx + 1 %></td>
+                      <td><%= item.nama_pembeli %></td>
+                      <td><%= item.nama_produk %></td>
+                      <td>Rp <%= item.harga.toLocaleString("id-ID") %></td>
+                      <td><img src="<%= item.foto %>" width="80" /></td>
+                      <td><%= item.status %></td>
+                      <td><%= item.tanggal %></td>
+                      <td>
+                        <button
+                          class="btn btn-info btn-sm"
+                          type="button"
+                          data-toggle="modal"
+                          data-target="#modalDetail<%= item.id %>"
+                        >
+                          <i class="fas fa-eye"></i> Detail
+                        </button>
+                      </td>
+                    </tr>
+
+                    <!-- Modal Detail -->
+                    <div
+                      class="modal fade"
+                      id="modalDetail<%= item.id %>"
+                      tabindex="-1"
+                      role="dialog"
+                      aria-labelledby="modalLabel<%= item.id %>"
+                      aria-hidden="true"
+                    >
+                      <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header bg-info">
+                            <h5
+                              class="modal-title"
+                              id="modalLabel<%= item.id %>"
+                            >
+                              Detail Pembelian
+                            </h5>
+                            <button
+                              type="button"
+                              class="close"
+                              data-dismiss="modal"
+                              aria-label="Close"
+                            >
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <dl class="row">
+                              <dt class="col-sm-4">Nama Pembeli</dt>
+                              <dd class="col-sm-8"><%= item.nama_pembeli %></dd>
+
+                              <dt class="col-sm-4">Nama Produk</dt>
+                              <dd class="col-sm-8"><%= item.nama_produk %></dd>
+
+                              <dt class="col-sm-4">Harga</dt>
+                              <dd class="col-sm-8">Rp <%= item.harga %></dd>
+
+                              <dt class="col-sm-4">Status</dt>
+                              <dd class="col-sm-8"><%= item.status %></dd>
+
+                              <dt class="col-sm-4">Tanggal</dt>
+                              <dd class="col-sm-8"><%= item.tanggal %></dd>
+
+                              <dt class="col-sm-4">Foto Produk</dt>
+                              <dd class="col-sm-8">
+                                <img
+                                  src="<%= item.foto %>"
+                                  class="img-fluid"
+                                  style="max-width: 150px"
+                                />
+                              </dd>
+                            </dl>
+                          </div>
+                          <div class="modal-footer">
+                            <button
+                              type="button"
+                              class="btn btn-secondary"
+                              data-dismiss="modal"
+                            >
+                              Tutup
+                            </button>
+                            <a
+                              href="/history/<%= item.id %>/hapus"
+                              class="btn btn-danger"
+                              onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
+                            >
+                              Hapus
+                            </a>
+                            <a
+                              href="/history/<%= item.id %>/edit"
+                              class="btn btn-warning"
+                            >
+                              Edit
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %> <% } else { %>
+                    <tr>
+                      <td colspan="8" class="text-center">
+                        Tidak ada data pembelian.
+                      </td>
+                    </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <!-- /.content-wrapper -->
+
+      <footer class="main-footer">
+        <strong>&copy; 2025 Stridecat Supply.</strong>
+        All rights reserved.
+      </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- jQuery -->
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/dist/js/adminlte.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      // Tampilkan pesan jika ada
+      <% if (typeof message !== "undefined" && message) { %>
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian!',
+          text: "<%= message %>",
+          confirmButtonText: 'OK',
+        });
+      <% } %>
+      // Alert jika data berhasil disimpan
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("success") === "true") {
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil!',
+          text: 'Data berhasil disimpan!',
+          confirmButtonText: 'OK',
+        });
+      }
+    </script>
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -107,7 +107,7 @@
               <tr>
                 <th>No</th>
                 <th>Nama Produk</th>
-                <th>Kategori</th>
+                <th>Foto Produk</th>
                 <th>Stok</th>
                 <th>Harga</th>
                 <th>Aksi</th>
@@ -120,7 +120,7 @@
                     <td><%= idx + 1 %></td>
                     <td><%= produk.nama_produk %></td>
                     <td><img src="<%= produk.foto %>" class="img-fluid" alt="<%= produk.nama_produk %>" width="100"></td>
-                    <td><%= produk.jumlah_barang %></td>
+                    <td><%= produk.jumlah_produk %></td>
                     <td>Rp <%= produk.harga %></td>
                     <td>
                       <a href="/produk/edit/<%= produk.id %>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>

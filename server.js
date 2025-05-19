@@ -87,16 +87,16 @@ app.get("/produk/tambah", (req, res) => {
       }
 
       const user = rows[0];
-      res.render("tambah_produk", {users: user, message: null}); // Kirim message: null
+      res.render("tambah_produk", { users: user, message: null }); // Kirim message: null
     }
   );
 });
 
 app.post("/produk/tambah", (req, res) => {
-  const { name, jumlah_barang, harga } = req.body;
+  const { name, jumlah_produk, harga } = req.body;
   const foto = req.files ? req.files.foto : null;
 
-  if (!name || !jumlah_barang || !harga || !foto) {
+  if (!name || !jumlah_produk || !harga || !foto) {
     return res.status(400).json({ error: "Data tidak lengkap" });
   }
 
@@ -111,8 +111,8 @@ app.post("/produk/tambah", (req, res) => {
 
     // Simpan ke database, simpan path foto (misal: /img/namafile.jpg)
     db.query(
-      "INSERT INTO produk (nama_produk, jumlah_barang, harga, foto) VALUES (?, ?, ?, ?)",
-      [name, jumlah_barang, harga, `/img/${fotoName}`],
+      "INSERT INTO produk (nama_produk, foto, harga, jumlah_produk) VALUES (?, ?, ?, ?)",
+      [name, `/img/${fotoName}`, harga, jumlah_produk],
       (err) => {
         if (err) {
           return res.status(500).json({ error: "Gagal menyimpan data" });
@@ -185,27 +185,83 @@ app.get("/produk/hapus/:id", (req, res) => {
 });
 
 app.get("/history", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
-  }
+  if (!req.session.userId) return res.redirect("/login");
 
-  // Ambil data pengguna dari database
+  // Ambil data pengguna yang login
+  db.query("SELECT * FROM users WHERE id = ?", [req.session.userId], (err, rows) => {
+    if (err || rows.length === 0) return res.status(500).json({ error: "User not found" });
+
+    const user = rows[0];
+
+    // Ambil history pembelian + join user dan produk
+    const sql = `
+      SELECT hp.*, u.name as nama_pembeli, p.nama_produk, p.harga, p.foto
+      FROM history_pembelian hp
+      JOIN users u ON hp.id_user = u.id
+      JOIN produk p ON hp.id_produk = p.id_produk
+      ORDER BY hp.tanggal DESC
+    `;
+
+    db.query(sql, (err, historyRows) => {
+      if (err) return res.status(500).json({ error: "Gagal ambil data history" });
+
+      res.render("history_pembelian", {
+        users: user,
+        history: historyRows,
+        message: null
+      });
+    });
+  });
+});
+
+// ...existing code...
+
+// Tampilkan form edit history pembelian
+app.get("/history/:id/edit", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  const id = req.params.id;
   db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
+    `SELECT hp.*, u.name as nama_pembeli, p.nama_produk, p.harga, p.foto
+     FROM history_pembelian hp
+     JOIN users u ON hp.id_user = u.id
+     JOIN produk p ON hp.id_produk = p.id_produk
+     WHERE hp.id = ?`,
+    [id],
     (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Error querying database" });
-      }
-
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User  not found" });
-      }
-
-      const user = rows[0];
-      res.render("history_pembelian", { users: user, message: null }); // Kirim message: null
+      if (err || rows.length === 0) return res.status(404).send("Data tidak ditemukan");
+      res.render("edit_history", { history: rows[0], users: req.session.userId, message: null });
     }
   );
+});
+
+// Proses edit history pembelian
+app.post("/history/:id/edit", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  const id = req.params.id;
+  const { status, tanggal, metode_pembayaran, resi, jasa_pengiriman } = req.body;
+
+  db.query(
+    `UPDATE history_pembelian SET status=?, tanggal=?, metode_pembayaran=?, resi=?, jasa_pengiriman=? WHERE id=?`,
+    [status, tanggal, metode_pembayaran, resi, jasa_pengiriman, id],
+    (err) => {
+      if (err) return res.status(500).json({ error: "Gagal update history pembelian" });
+      res.redirect("/history?success=true");
+    }
+  );
+});
+
+// ...existing code...
+
+app.get("/history/:id/hapus", (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  const id = req.params.id;
+  db.query("DELETE FROM history_pembelian WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ error: "Gagal hapus history pembelian" });
+    res.redirect("/history?success=true");
+  });
 });
 
 // Landing Page
@@ -479,3 +535,4 @@ app.post("/peminjaman", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server berjalan di http://localhost:${PORT}`);
 });
+

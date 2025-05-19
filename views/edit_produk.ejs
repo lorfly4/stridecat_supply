@@ -102,7 +102,7 @@
                   <div class="card-header">
                     <h3 class="card-title">Edit Produk</h3>
                   </div>
-                  <form action="/produk/edit:id" method="post" enctype="multipart/form-data">
+                  <form action="/produk/edit/<%= produk._id %>" method="post" enctype="multipart/form-data">
                     <div class="card-body">
                       <div class="form-group">
                         <label for="name">Nama Produk</label>
@@ -120,7 +120,7 @@
                         <label for="produkImage">Gambar Produk</label>
                         <div class="input-group">
                           <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="produkImage" name="produkImage" accept="image/*" onchange="previewprodukImage()">
+                            <input type="file" class="custom-file-input" id="produkImage" name="produkImage" accept="image/*" onchange="previewProductImage()">
                             <label class="custom-file-label" for="produkImage">Pilih gambar</label>
                           </div>
                         </div>
@@ -140,5 +140,8 @@
                           if (file) {
                             reader.readAsDataURL(file);
                           } else {
-                            productPreview.src = '/
+                                  productPreview.src = '/img/produk-default.png';
+                                }
+                              }
+                            </script>
 
