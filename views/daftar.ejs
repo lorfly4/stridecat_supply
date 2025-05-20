@@ -74,26 +74,19 @@
       <div class="register-container">
         <div class="register-header">Registration Form</div>
         <div class="input-group">
-          <i class="fas fa-id-card input-icon"></i>
-          <input
-            type="text"
-            value="<%= Math.floor(Math.random()*10000000000) %>"
-            placeholder="Nomor Anggota"
-            name="nomor_keanggotaan"
-            readonly
-          />
-        </div>
-        <div class="input-group">
           <i class="fas fa-user input-icon"></i>
-          <input type="text" placeholder="Nama" name="nama" />
+          <input type="text" placeholder="Nama" name="name" />
         </div>
         <div class="input-group">
           <i class="fas fa-graduation-cap input-icon"></i>
-          <input type="text" placeholder="Divisi" name="divisi" />
+          <input type="text" placeholder="Email" name="email" />
         </div>
         <div class="input-group">
           <i class="fas fa-lock input-icon"></i>
           <input type="password" placeholder="Password" name="password" />
+        </div>
+        <div class="input-group">
+          <input type="text" placeholder="Role" name="role" hidden value="user"/>
         </div>
         <div class="input-group">
           <i class="fas fa-camera input-icon"></i>

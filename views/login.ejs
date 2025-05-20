@@ -97,3 +97,23 @@
     </form>
   </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <% if (typeof session !== 'undefined' && session === 'success') { %>
+    <script>
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: 'Berhasil di tambahkan',
+        confirmButtonColor: '#17a2b8'
+      });
+    </script>
+    <% } else if (typeof message !== 'undefined' && message) { %>
+    <script>
+      Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: '<%= message %>',
+        confirmButtonColor: '#17a2b8'
+      });
+    </script>
+    <% } %>

@@ -4,6 +4,7 @@ const fileUpload = require("express-fileupload");
 const path = require("path");
 const session = require("express-session"); // Import express-session
 const db = require("./db"); // Import the database connection
+const util = require("util");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,71 +29,154 @@ app.use(
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Route Halaman Daftar
 app.get("/daftar", (req, res) => {
   res.render("daftar");
 });
 
-app.get("/produk", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
+/**
+ * CRUD Users
+ */
+
+// List all users (admin only)
+app.get("/admin/users", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "admin") return res.redirect("/login");
+  try {
+    const usersResult = await db.query("SELECT * FROM users ORDER BY id ASC");
+    const user = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    res.render("admin/users", {
+      usersList: usersResult.rows,
+      users: user.rows[0], // ⬅️ Kirim user login ke EJS
+      message: null
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Gagal mengambil data users" });
   }
+});
 
-  // Ambil data pengguna dari database
-  db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Error querying database" });
-      }
+// Show add user form
+app.get("/admin/users/tambah", (req, res) => {
+  if (!req.session.userId || req.session.role !== "admin") return res.redirect("/login");
+  res.render("admin/tambah_user", { message: null });
+});
 
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User  not found" });
-      }
-
-      const user = rows[0];
-
-      // Ambil data produk dari database
-      db.query(
-        "SELECT * FROM produk",
-        (err, rows2) => {
-          if (err) {
-            return res.status(500).json({ error: "Error querying database" });
-          }
-
-          res.render("produk", { users: user, produkList: rows2, message: null }); // Kirim message: null
-        }
+// Handle add user
+app.post("/admin/users/tambah", async (req, res) => {
+  const { name, email, password, role } = req.body;
+  const foto = req.files ? req.files.foto : null;
+  if (!name || !email || !password || !role || !foto) {
+    return res.status(400).json({ error: "Data tidak lengkap" });
+  }
+  const fotoName = Date.now() + "_" + foto.name;
+  const fotoPath = path.join(__dirname, "public", "img", fotoName);
+  foto.mv(fotoPath, async (err) => {
+    if (err) return res.status(500).json({ error: "Gagal upload foto" });
+    try {
+      await db.query(
+        "INSERT INTO users (name, email, password, foto, role) VALUES ($1, $2, $3, $4, $5)",
+        [name, email, password, `/img/${fotoName}`, role]
       );
+      res.redirect("/admin/users?success=true");
+    } catch (err) {
+      res.status(500).json({ error: "Gagal menyimpan user" });
     }
-  );
+  });
 });
 
-app.get("/produk/tambah", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
+// Show edit user form
+app.get("/admin/users/edit/:id", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "admin") return res.redirect("/login");
+  const userId = req.params.id;
+  try {
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [userId]);
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User tidak ditemukan" });
+    res.render("admin/edit_user", { user: userResult.rows[0], message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Gagal mengambil data user" });
   }
-
-  // Ambil data pengguna dari database
-  db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Error querying database" });
-      }
-
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User  not found" });
-      }
-
-      const user = rows[0];
-      res.render("tambah_produk", { users: user, message: null }); // Kirim message: null
-    }
-  );
 });
 
-app.post("/produk/tambah", (req, res) => {
+// Handle edit user
+app.post("/admin/users/edit/:id", async (req, res) => {
+  const userId = req.params.id;
+  let { name, email, password, role } = req.body;
+  let foto = req.files ? req.files.foto : null;
+  try {
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [userId]);
+    if (userResult.rows.length === 0) return res.status(404).json({ error: "User tidak ditemukan" });
+    let fotoPath = userResult.rows[0].foto;
+    if (!password) password = userResult.rows[0].password;
+    const updateUser = async () => {
+      try {
+        await db.query(
+          "UPDATE users SET name=$1, email=$2, password=$3, foto=$4, role=$5 WHERE id=$6",
+          [name, email, password, fotoPath, role, userId]
+        );
+        res.redirect("/admin/users?success=true");
+      } catch (err) {
+        res.status(500).json({ error: "Gagal update user" });
+      }
+    };
+    if (foto) {
+      const fotoName = Date.now() + "_" + foto.name;
+      fotoPath = `/img/${fotoName}`;
+      foto.mv(path.join(__dirname, "public", "img", fotoName), async (err) => {
+        if (err) return res.status(500).json({ error: "Gagal upload foto" });
+        await updateUser();
+      });
+    } else {
+      await updateUser();
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Gagal mengambil data user" });
+  }
+});
+
+// Handle delete user
+app.get("/admin/users/hapus/:id", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "admin") return res.redirect("/login");
+  const userId = req.params.id;
+  try {
+    await db.query("DELETE FROM users WHERE id = $1", [userId]);
+    res.redirect("/admin/users?success=true");
+  } catch (err) {
+    res.status(500).json({ error: "Gagal hapus user" });
+  }
+});
+
+app.get("/admin/produk", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+  try {
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = userResult.rows[0];
+    const produkResult = await db.query("SELECT * FROM produk");
+    res.render("admin/produk", { users: user, produkList: produkResult.rows, message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
+});
+
+app.get("/admin/produk/tambah", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+  try {
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = userResult.rows[0];
+    res.render("admin/tambah_produk", { users: user, message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
+});
+
+app.post("/admin/produk/tambah", async (req, res) => {
   const { name, jumlah_produk, harga } = req.body;
   const foto = req.files ? req.files.foto : null;
 
@@ -100,100 +184,101 @@ app.post("/produk/tambah", (req, res) => {
     return res.status(400).json({ error: "Data tidak lengkap" });
   }
 
-  // Simpan file foto ke folder public/img
   const fotoName = Date.now() + "_" + foto.name;
   const fotoPath = path.join(__dirname, "public", "img", fotoName);
 
-  foto.mv(fotoPath, (err) => {
+  foto.mv(fotoPath, async (err) => {
     if (err) {
       return res.status(500).json({ error: "Gagal upload foto" });
     }
-
-    // Simpan ke database, simpan path foto (misal: /img/namafile.jpg)
-    db.query(
-      "INSERT INTO produk (nama_produk, foto, harga, jumlah_produk) VALUES (?, ?, ?, ?)",
-      [name, `/img/${fotoName}`, harga, jumlah_produk],
-      (err) => {
-        if (err) {
-          return res.status(500).json({ error: "Gagal menyimpan data" });
-        }
-
-        res.redirect("/produk?success=true");
-      }
-    );
+    try {
+      await db.query(
+        "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang) VALUES ($1, $2, $3, $4)",
+        [name, `/img/${fotoName}`, harga, jumlah_produk]
+      );
+      res.redirect("/admin/produk?success=true");
+    } catch (err) {
+      res.status(500).json({ error: "Gagal menyimpan data" });
+      console.log(err);
+    }
   });
 });
 
-app.get("/produk/edit/:id", (req, res) => {
+app.get("/admin/produk/edit/:id", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
   const produkId = req.params.id;
-
-  db.query("SELECT * FROM users WHERE id = ?", [req.session.userId], (err, users) => {
-    if (err || users.length === 0) return res.status(500).json({ error: "User not found" });
-
-    db.query("SELECT * FROM produk WHERE id = ?", [produkId], (err, produkRows) => {
-      if (err || produkRows.length === 0) return res.status(404).json({ error: "Produk tidak ditemukan" });
-
-      res.render("edit_produk", { users: users[0], produk: produkRows[0], message: null });
-    });
-  });
+  try {
+    const usersResult = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (usersResult.rows.length === 0) return res.status(500).json({ error: "User not found" });
+    const produkResult = await db.query("SELECT * FROM produk WHERE id_produk = $1", [produkId]);
+    if (produkResult.rows.length === 0) return res.status(404).json({ error: "Produk tidak ditemukan" });
+    res.render("admin/edit_produk", { users: usersResult.rows[0], produk: produkResult.rows[0], message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+    console.log(err);
+  }
 });
 
-app.post("/produk/edit/:id", (req, res) => {
+app.post("/admin/produk/edit/:id", async (req, res) => {
   const produkId = req.params.id;
   const { name, jumlah_barang, harga } = req.body;
   let foto = req.files ? req.files.foto : null;
 
-  // Ambil data lama jika tidak upload foto baru
-  db.query("SELECT * FROM produk WHERE id = ?", [produkId], (err, rows) => {
-    if (err || rows.length === 0) return res.status(404).json({ error: "Produk tidak ditemukan" });
+  try {
+    const result = await db.query("SELECT * FROM produk WHERE id_produk = $1", [produkId]);
+    if (result.rows.length === 0) return res.status(404).json({ error: "Produk tidak ditemukan" });
 
-    let fotoPath = rows[0].foto;
+    let fotoPath = result.rows[0].foto;
+    const updateProduk = async () => {
+      try {
+        await db.query(
+          "UPDATE produk SET nama_produk=$1, jumlah_barang=$2, harga=$3, foto=$4 WHERE id_produk=$5",
+          [name, jumlah_barang, harga, fotoPath, produkId]
+        );
+        res.redirect("/admin/produk?success=true");
+      } catch (err) {
+        res.status(500).json({ error: "Gagal update produk" });
+        console.log(err);
+      }
+    };
+
     if (foto) {
       const fotoName = Date.now() + "_" + foto.name;
       fotoPath = `/img/${fotoName}`;
-      foto.mv(path.join(__dirname, "public", "img", fotoName), (err) => {
+      foto.mv(path.join(__dirname, "public", "img", fotoName), async (err) => {
         if (err) return res.status(500).json({ error: "Gagal upload foto" });
-        updateProduk();
+        await updateProduk();
       });
     } else {
-      updateProduk();
+      await updateProduk();
     }
-
-    function updateProduk() {
-      db.query(
-        "UPDATE produk SET nama_produk=?, jumlah_barang=?, harga=?, foto=? WHERE id=?",
-        [name, jumlah_barang, harga, fotoPath, produkId],
-        (err) => {
-          if (err) return res.status(500).json({ error: "Gagal update produk" });
-          res.redirect("/produk?success=true");
-        }
-      );
-    }
-  });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+    console.log(err);
+  }
 });
 
-app.get("/produk/hapus/:id", (req, res) => {
+app.get("/admin/produk/hapus/:id", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
   const produkId = req.params.id;
-  db.query("DELETE FROM produk WHERE id = ?", [produkId], (err) => {
-    if (err) return res.status(500).json({ error: "Gagal hapus produk" });
-    res.redirect("/produk?success=true");
-  });
+  try {
+    await db.query("DELETE FROM produk WHERE id_produk = $1", [produkId]);
+    res.redirect("/admin/produk?success=true");
+  } catch (err) {
+    console.log("Gagal hapus produk:", err);
+    res.status(500).json({ error: "Gagal hapus produk" });
+  }
 });
 
-app.get("/history", (req, res) => {
+app.get("/admin/history", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
-  // Ambil data pengguna yang login
-  db.query("SELECT * FROM users WHERE id = ?", [req.session.userId], (err, rows) => {
-    if (err || rows.length === 0) return res.status(500).json({ error: "User not found" });
-
-    const user = rows[0];
-
-    // Ambil history pembelian + join user dan produk
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      console.log("User not found saat akses history");
+      return res.status(500).json({ error: "User not found" });
+    }
+    const user = result.rows[0];
     const sql = `
       SELECT hp.*, u.name as nama_pembeli, p.nama_produk, p.harga, p.foto
       FROM history_pembelian hp
@@ -201,338 +286,235 @@ app.get("/history", (req, res) => {
       JOIN produk p ON hp.id_produk = p.id_produk
       ORDER BY hp.tanggal DESC
     `;
-
-    db.query(sql, (err, historyRows) => {
-      if (err) return res.status(500).json({ error: "Gagal ambil data history" });
-
-      res.render("history_pembelian", {
-        users: user,
-        history: historyRows,
-        message: null
-      });
+    const historyResult = await db.query(sql);
+    res.render("admin/history_pembelian", {
+      users: user,
+      history: historyResult.rows,
+      message: null
     });
-  });
+  } catch (err) {
+    console.log("Gagal ambil data history:", err);
+    res.status(500).json({ error: "Gagal ambil data history" });
+  }
 });
 
-// ...existing code...
-
 // Tampilkan form edit history pembelian
-app.get("/history/:id/edit", (req, res) => {
+app.get("/admin/history/:id/edit", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
   const id = req.params.id;
-  db.query(
-    `SELECT hp.*, u.name as nama_pembeli, p.nama_produk, p.harga, p.foto
-     FROM history_pembelian hp
-     JOIN users u ON hp.id_user = u.id
-     JOIN produk p ON hp.id_produk = p.id_produk
-     WHERE hp.id = ?`,
-    [id],
-    (err, rows) => {
-      if (err || rows.length === 0) return res.status(404).send("Data tidak ditemukan");
-      res.render("edit_history", { history: rows[0], users: req.session.userId, message: null });
+  try {
+    const result = await db.query(
+      `SELECT hp.*, u.name as nama_pembeli, p.nama_produk, p.harga, p.foto
+       FROM history_pembelian hp
+       JOIN users u ON hp.id_user = u.id
+       JOIN produk p ON hp.id_produk = p.id_produk
+       WHERE hp.id = $1`,
+      [id]
+    );
+    if (result.rows.length === 0) {
+      console.log("Data history tidak ditemukan untuk edit:", id);
+      return res.status(404).send("Data tidak ditemukan");
     }
-  );
+    res.render("admin/edit_history", { history: result.rows[0], users: req.session.userId, message: null });
+  } catch (err) {
+    console.log("Gagal ambil data history untuk edit:", err);
+    res.status(500).json({ error: "Gagal ambil data history" });
+  }
 });
 
 // Proses edit history pembelian
-app.post("/history/:id/edit", (req, res) => {
+app.post("/admin/history/:id/edit", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
   const id = req.params.id;
   const { status, tanggal, metode_pembayaran, resi, jasa_pengiriman } = req.body;
-
-  db.query(
-    `UPDATE history_pembelian SET status=?, tanggal=?, metode_pembayaran=?, resi=?, jasa_pengiriman=? WHERE id=?`,
-    [status, tanggal, metode_pembayaran, resi, jasa_pengiriman, id],
-    (err) => {
-      if (err) return res.status(500).json({ error: "Gagal update history pembelian" });
-      res.redirect("/history?success=true");
-    }
-  );
+  try {
+    await db.query(
+      `UPDATE history_pembelian SET status=$1, tanggal=$2, metode_pembayaran=$3, resi=$4, jasa_pengiriman=$5 WHERE id=$6`,
+      [status, tanggal, metode_pembayaran, resi, jasa_pengiriman, id]
+    );
+    res.redirect("/admin/history?success=true");
+  } catch (err) {
+    console.log("Gagal update history pembelian:", err);
+    res.status(500).json({ error: "Gagal update history pembelian" });
+  }
 });
 
-// ...existing code...
-
-app.get("/history/:id/hapus", (req, res) => {
+app.get("/admin/history/:id/hapus", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
-
   const id = req.params.id;
-  db.query("DELETE FROM history_pembelian WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ error: "Gagal hapus history pembelian" });
-    res.redirect("/history?success=true");
-  });
+  try {
+    await db.query("DELETE FROM history_pembelian WHERE id = $1", [id]);
+    res.redirect("/admin/history?success=true");
+  } catch (err) {
+    console.log("Gagal hapus history pembelian:", err);
+    res.status(500).json({ error: "Gagal hapus history pembelian" });
+  }
 });
 
-// Landing Page
+
 app.get("/", (req, res) => {
   res.render("index");
 });
 
-// Login Page
 app.get("/login", (req, res) => {
   res.render("login");
 });
 
-// API Login
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { name, password } = req.body;
-
-  db.query(
-    "SELECT * FROM users WHERE name = ? AND password = ? LIMIT 1",
-    [name, password],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Gagal login" });
-      }
-
-      if (rows.length === 0) {
-        return res.status(401).json({ error: "Nama atau password salah" });
-      }
-
-      const user = rows[0];
-      req.session.userId = user.id; // Simpan ID pengguna di sesi
-
-      res.redirect("/landing"); // Redirect ke halaman profil setelah login
+  if (!name || !password) {
+    return res.render("login", { message: "username dan password wajib diisi" });
+  }
+  try {
+    const result = await db.query(
+      "SELECT * FROM users WHERE name = $1 AND password = $2",
+      [name, password]
+    );
+    if (result.rows.length === 0) {
+      return res.render("login", { message: "username atau password salah" });
     }
-  );
+    const user = result.rows[0];
+    req.session.userId = user.id;
+    req.session.role = user.role;
+    if (user.role === "admin") {
+      return res.redirect("/admin/landing");
+    } else {
+      return res.redirect("/landing");
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
 });
 
-// Route untuk halaman landing
-app.get("/landing", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
+app.get("/admin/landing", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "admin") {
+    return res.redirect("/login");
   }
-
-  // Ambil data pengguna dari database
-  db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Error querying database" });
-      }
-
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User  not found" });
-      }
-
-      const user = rows[0];
-      res.render("landing", { users: user, message: null }); // Kirim message: null
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
     }
-  );
+    const user = result.rows[0];
+    res.render("admin/landing", { users: user, message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
 });
 
-// Handle Registrasi
-app.post("/daftar", (req, res) => {
-  // Debug log untuk memantau data
-  console.log("Request Body:", req.body);
-  console.log("Request Files:", req.files);
+app.get("/landing", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = result.rows[0];
+    res.render("user/landing", { users: user, message: null });
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
+});
 
-  // Validasi jika file tidak diunggah
-  if (!req.files || !req.files.foto) {
-    return res.status(400).json({ error: "No file uploaded" });
+app.post("/daftar", async (req, res) => {
+  const { name, email, password, role } = req.body;
+  const foto = req.files ? req.files.foto : null;
+
+  if (!name || !email || !password || !foto) {
+    return res.status(400).json({ error: "Data tidak lengkap" });
   }
 
-  const { nomor_keanggotaan, nama, divisi, password } = req.body;
-  const file = req.files.foto;
-
-  // Nama dan lokasi file
-  const fotoName = Date.now() + "_" + file.name; // Tambah timestamp agar nama unik
+  const fotoName = Date.now() + "_" + foto.name;
   const fotoPath = path.join(__dirname, "public", "img", fotoName);
 
-  // Pindahkan file ke lokasi tujuan
-  file.mv(fotoPath, (err) => {
+  foto.mv(fotoPath, async (err) => {
     if (err) {
-      console.error("File Upload Error:", err.message);
-      return res.status(500).json({ error: "Failed to upload file." });
+      return res.status(500).json({ error: "Gagal upload foto" });
     }
-
-    // Simpan data ke database
-    db.query(
-      "INSERT INTO users (nomor_keanggotaan, nama, divisi, password, foto) VALUES (?, ?, ?, ?, ?)",
-      [nomor_keanggotaan, nama, divisi, password, `/img/${fotoName}`],
-      (err, results) => {
-        if (err) {
-          console.error("Database Error:", err.message);
-          return res.status(500).json({ error: "Failed to save user." });
-        }
-        console.log("User  Registered:", results);
-        res.render("login"); // Redirect ke halaman login setelah registrasi
-      }
-    );
+    try {
+      await db.query(
+        "INSERT INTO users (name, email, password, foto, role) VALUES ($1, $2, $3, $4, $5)",
+        [name, email, password, `/img/${fotoName}`, role]
+      );
+      // Kirim pesan sukses ke halaman login untuk SweetAlert
+      res.render("login", { session: "success" }); // ⬅️ Tambahkan session: "success"
+    } catch (err) {
+      res.status(500).json({ error: "Gagal menyimpan user" });
+    }
   });
 });
 
-// Route untuk menampilkan halaman profil
-app.get("/profil", (req, res) => {
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
-  }
+app.get("/admin/profil", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
 
-  // Ambil data pengguna dari database
-  db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Error querying database" });
-      }
-
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User  not found" });
-      }
-
-      const user = rows[0];
-      res.render("profil", { users: user }); // Render halaman profil dengan data pengguna
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
     }
-  );
+    const user = result.rows[0];
+    res.render("admin/profil", { users: user });
+  } catch (err) {
+    console.error("QUERY ERROR:", err); // ⬅️ Ini penting!
+    res.status(500).json({ error: "Error querying database" });
+  }
 });
 
-// Route untuk logout
+// filepath: [server.js](http://_vscodecontentref_/3)
+app.post("/admin/profil", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  let { name, email, password } = req.body;
+  let foto = req.files ? req.files.foto : null;
+
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    let fotoPath = result.rows[0].foto;
+    if (!password) password = result.rows[0].password; // gunakan password lama jika kosong
+
+    const updateProfil = async () => {
+      try {
+        // Ganti 'name' dengan 'nama' jika di database kolomnya 'nama'
+        await db.query(
+          "UPDATE users SET name=$1, email=$2, password=$3, foto=$4 WHERE id=$5",
+          [name, email, password, fotoPath, req.session.userId]
+        );
+        res.redirect("/admin/profil?success=true");
+      } catch (err) {
+        res.status(500).json({ error: "Gagal update profil" });
+        console.log(err);
+      }
+    };
+
+    if (foto) {
+      const fotoName = Date.now() + "_" + foto.name;
+      fotoPath = `/img/${fotoName}`;
+      foto.mv(path.join(__dirname, "public", "img", fotoName), async (err) => {
+        if (err) return res.status(500).json({ error: "Gagal upload foto" });
+        await updateProfil();
+      });
+    } else {
+      await updateProfil();
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Error querying database" });
+  }
+});
+
 app.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       return res.status(500).json({ error: "Gagal logout" });
     }
-    res.redirect("/"); // Redirect ke halaman utama setelah logout
+    res.redirect("/");
   });
 });
 
-app.get("/peminjaman", (req, res) => {
-  console.log("Query Parameters:", req.query);
-
-  if (!req.session.userId) {
-    return res.redirect("/login"); // Redirect jika pengguna tidak login
-  }
-
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
-
-  const DateYear = req.query.DateYear || currentYear;
-  const DateMonth = req.query.DateMonth || currentMonth;
-
-  if (
-    isNaN(DateYear) ||
-    isNaN(DateMonth) ||
-    DateMonth < 1 ||
-    DateMonth > 12
-  ) {
-    return res
-      .status(400)
-      .json({ error: "Invalid or missing DateYear or DateMonth" });
-  }
-
-  // Ambil data pengguna
-  db.query(
-    "SELECT * FROM users WHERE id = ?",
-    [req.session.userId],
-    (err, rows) => {
-      if (err) {
-        return res.status(500).json({ error: "Failed to retrieve user data." });
-      }
-
-      if (rows.length === 0) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      const user = rows[0];
-
-      // Periksa jumlah peminjaman untuk DateYear dan DateMonth tertentu
-      db.query(
-        "SELECT COUNT(*) as count FROM peminjaman WHERE DateYear = ? AND DateMonth = ?",
-        [DateYear, DateMonth],
-        (err, result) => {
-          if (err) {
-            return res
-              .status(500)
-              .json({ error: "Failed to query loan data from database." });
-          }
-
-          const count = result[0].count;
-
-          // Jika data berjumlah 3 atau lebih, tolak akses
-          if (count >= 3) {
-            return res.render("landing", {
-              users: user, // Kirim data pengguna
-              message: `Peminjaman untuk bulan ${DateMonth} tahun ${DateYear} sudah mencapai batas maksimum (3 peminjaman).`,
-            });
-          }
-
-          // Tampilkan halaman peminjaman
-          res.render("peminjaman", { users: user });
-        }
-      );
-    }
-  );
-});
-
-
-// API untuk memasukan data ke dalam database
-app.post("/peminjaman", (req, res) => {
-  const {
-    id,
-    nomor_keanggotaan,
-    nama,
-    divisi,
-    pinjaman,
-    cicilan,
-    cicilan_perbulan,
-    tanggal,
-  } = req.body;
-
-  if (
-    !id ||
-    !nomor_keanggotaan ||
-    !nama ||
-    !divisi ||
-    !pinjaman ||
-    !cicilan ||
-    !cicilan_perbulan ||
-    !tanggal
-  ) {
-    return res.status(400).json({ error: "Data tidak lengkap" });
-  }
-
-  const tanggalObj = new Date(tanggal);
-  const dateDay = String(tanggalObj.getDate()).padStart(2, "0"); // dd
-  const DateMonth = String(tanggalObj.getMonth() + 1).padStart(2, "0"); // mm
-  const DateYear = tanggalObj.getFullYear(); // yyyy
-
-  const fullDate = `${dateDay}-${DateMonth}-${DateYear}`;
-
-  // Simpan data ke database
-  db.query(
-    "INSERT INTO peminjaman (nomor_keanggotaan, nama, divisi, pinjaman, cicilan, cicilan_perbulan, tanggal, DateMonth, DateYear, userID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    [
-      nomor_keanggotaan,
-      nama,
-      divisi,
-      pinjaman,
-      cicilan,
-      cicilan_perbulan,
-      fullDate,
-      DateMonth,
-      DateYear,
-      id,
-    ],
-    (err, results) => {
-      if (err) {
-        console.error("Database Error:", err.message);
-        return res.status(500).json({ error: "Gagal menyimpan data" });
-      }
-
-      console.log("Data berhasil disimpan:", results);
-
-      // Redirect dengan parameter success=true
-      res.redirect("/landing?success=true");
-    }
-  );
-});
-
-// Menjalankan server
 app.listen(PORT, () => {
-  console.log(`Server berjalan di http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
