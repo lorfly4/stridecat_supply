@@ -1,1 +1,1 @@
-koperasi online
+aplikasi berbelanja baju thrift online
