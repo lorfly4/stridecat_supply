@@ -1,22 +1,12 @@
-// db.js
-const mysql = require("mysql2");
+const { Pool } = require('pg');
 
-// Konfigurasi koneksi
-const connection = mysql.createConnection({
-  host: "localhost", // Ganti dengan host database Anda
-  user: "root", // Ganti dengan username database Anda
-  password: "", // Ganti dengan password database Anda
-  database: "stridecat_supply", // Ganti dengan nama database Anda
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_DATABASE || 'stridecat_supply',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'Akugataumales1',
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
 
-// Menghubungkan ke database
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to the database:", err.stack);
-    return;
-  }
-  console.log("Connected to the database as ID " + connection.threadId);
-});
-
-// Ekspor koneksi untuk digunakan di file lain
-module.exports = connection;
+module.exports = pool; // ⚠️ langsung export pool, bukan function callback
