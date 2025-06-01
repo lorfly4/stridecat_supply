@@ -155,6 +155,7 @@ app.get("/admin/produk", async (req, res) => {
     const user = userResult.rows[0];
     const produkResult = await db.query("SELECT * FROM produk");
     res.render("admin/produk", { users: user, produkList: produkResult.rows, message: null });
+
     console.log("Produk List:", produkResult.rows);
   } catch (err) {
     res.status(500).json({ error: "Error querying database" });
@@ -411,12 +412,28 @@ app.get("/landing", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "User  not found" });
+      return res.status(404).json({ error: "User not found" });
     }
     const user = result.rows[0];
-    res.render("user/landing", { users: user, message: null });
+    const keranjangResult = await db.query("SELECT * FROM keranjang WHERE id_users = $1", [req.session.userId]);
+    let keranjangList = [];
+    if (keranjangResult.rows.length > 0) {
+      keranjangList = keranjangResult.rows;
+    }
+    const produkResult = await db.query("SELECT * FROM produk");
+    let produkList = [];
+    if (produkResult.rows.length > 0) {
+      produkList = produkResult.rows;
+    }
+    res.render("user/landing", {
+      users: user,
+      message: null,
+      keranjangList,
+      produkList
+    });
   } catch (err) {
-    res.status(500).json({ error: "Error querying database" });
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
   }
 });
 app.get("/produk", async (req, res) => {
@@ -535,3 +552,4 @@ app.get("/logout", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+

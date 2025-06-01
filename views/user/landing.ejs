@@ -51,10 +51,7 @@
       </a>
       <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
         <a class="hover:text-red-600 transition" href="#"> Home </a>
-        <a class="hover:text-red-600 transition" href="#"> Products </a>
-        <a class="hover:text-red-600 transition" href="#"> About Us </a>
-        <a class="hover:text-red-600 transition" href="#"> News </a>
-        <a class="hover:text-red-600 transition" href="#"> Contact </a>
+        <a class="hover:text-red-600 transition" href="#products"> Products </a>
       </nav>
       <div class="hidden md:flex items-center space-x-4">
         <button aria-label="Search" class="text-gray-700 hover:text-red-600 transition focus:outline-none">
@@ -65,7 +62,7 @@
         <i class="fas fa-shopping-cart text-lg"> </i>
         <span
         class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-        2
+        <%= keranjangList ? keranjangList.length : 0 %>
     </span>
 </button>
 <div class="relative"></div>
@@ -108,17 +105,6 @@
         href="#">
         Products
       </a>
-      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
-        href="#">
-        About Us
-      </a>
-      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
-        href="#">
-        News
-      </a>
-      <a class="block px-4 py-3 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600" href="#">
-        Contact
-      </a>
         <script>
           function toggleMenu() {
             const menu = document.getElementById('accountMenu');
@@ -152,15 +138,14 @@
     <div class="container mx-auto px-4 py-16 flex flex-col md:flex-row items-center md:space-x-12">
       <div class="md:w-1/2 text-center md:text-left">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-6">
-          Discover the Best Vape Experience
+          Temukan Produk Pakaian Terbaik
         </h1>
         <p class="text-gray-700 mb-8 text-lg md:text-xl">
-          Premium quality vape products with unbeatable prices and fast
-          delivery.
+          Produk berkualitas premium dengan harga tak tertandingi dan pengiriman cepat.
         </p>
         <a class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded shadow transition"
           href="#products">
-          Shop Now
+          Beli Sekarang
         </a>
       </div>
       <div class="md:w-1/2 mt-10 md:mt-0">
@@ -170,259 +155,29 @@
       </div>
     </div>
   </section>
-  <!-- Featured Products -->
+  <!-- Produk Terbaru -->
   <section class="container mx-auto px-4 py-16" id="products">
-    <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
-      Featured Products
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" role="list">
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Classic Black Device with sleek matte finish and ergonomic design"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/72a33bb5-6f6d-43fb-e1c1-6d789688cee7.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Classic Black
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 350,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Silver Edition Device with metallic finish and compact size"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/2d0fcae6-8037-42fc-2f3e-3342ca0f77f9.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Silver Edition
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 400,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Red Flame Device with fiery red gradient and modern design"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/3d2ec0aa-640b-4f52-5759-6747faf2f920.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Red Flame
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 375,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Blue Ocean Device with ocean blue gradient and smooth finish"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/5e40af89-ed7e-4e1c-ea08-cdd594ea7a32.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Blue Ocean
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 360,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Gold Luxury Device with shiny gold finish and premium look"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/5cd0d3c5-b1f5-49ae-a341-b6ad6aa1d758.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Gold Luxury
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 450,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Matte White Device with clean white matte finish and minimalist design"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/afc5c037-7fd4-4000-0c95-36f75c6e7891.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Matte White
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 340,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Carbon Fiber Device with textured carbon fiber pattern and sleek design"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/26cd76ff-c034-4b10-43b7-bf7872355a77.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Carbon Fiber
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 420,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Twone Vape Matte Green Device with forest green matte finish and ergonomic shape"
-          class="w-full h-48 object-cover" height="300"
-          src="https://storage.googleapis.com/a1aa/image/633dfc81-2424-4d21-af91-074befc6983f.jpg" width="400" />
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Twone Vape Matte Green
-          </h3>
-          <p class="text-red-600 font-bold text-xl mb-4">IDR 355,000</p>
-          <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-            Add to Cart
-          </button>
-        </div>
-      </article>
-    </div>
-  </section>
-  <!-- About Section -->
-  <section class="bg-gray-50 py-16">
-    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center md:space-x-12">
-      <div class="md:w-1/2 mb-10 md:mb-0">
-        <img alt="Twone Vape team working in a modern vape store with shelves of vape products and customers"
-          class="rounded-lg shadow-lg w-full" height="400"
-          src="https://storage.googleapis.com/a1aa/image/a27c7d57-2ff2-42d4-f428-ca5f9dc0b444.jpg" width="600" />
-      </div>
-      <div class="md:w-1/2">
-        <h2 class="text-3xl font-extrabold text-gray-900 mb-6">
-          About Twone Vape
-        </h2>
-        <p class="text-gray-700 mb-6 text-lg leading-relaxed">
-          Twone Vape is a leading vape product provider in Indonesia,
-          committed to delivering high-quality devices, e-liquids, and
-          accessories. Our passion for innovation and customer satisfaction
-          drives us to offer the best vape experience.
-        </p>
-        <p class="text-gray-700 mb-6 text-lg leading-relaxed">
-          Whether you are a beginner or an experienced vaper, Twone Vape has
-          the perfect product for you. Explore our wide range of products and
-          enjoy fast shipping and excellent customer service.
-        </p>
-        <a class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded shadow transition"
-          href="#contact">
-          Learn More
-        </a>
-      </div>
-    </div>
-  </section>
-  <!-- News Section -->
-  <section class="container mx-auto px-4 py-16">
-    <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
-      Latest News
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="New product launch event with people gathering around vape devices and banners"
-          class="w-full h-48 object-cover" height="250"
-          src="https://storage.googleapis.com/a1aa/image/32d504b5-1601-4b78-f550-a6aa38897abc.jpg" width="400" />
-        <div class="p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            New Product Launch Event
-          </h3>
-          <p class="text-gray-700 mb-4 text-sm">
-            Join us for the launch of our latest vape device with cutting-edge
-            technology and sleek design.
-          </p>
-          <a class="text-red-600 font-semibold hover:underline text-sm" href="#">
-            Read More
-          </a>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Vape safety tips infographic with icons of batteries, liquids, and devices"
-          class="w-full h-48 object-cover" height="250"
-          src="https://storage.googleapis.com/a1aa/image/caa648bb-d53e-4b76-2cbd-aec82d027c97.jpg" width="400" />
-        <div class="p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Vape Safety Tips 2024
-          </h3>
-          <p class="text-gray-700 mb-4 text-sm">
-            Stay safe while vaping with our comprehensive guide on device
-            maintenance and proper usage.
-          </p>
-          <a class="text-red-600 font-semibold hover:underline text-sm" href="#">
-            Read More
-          </a>
-        </div>
-      </article>
-      <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-        <img alt="Exclusive discounts banner with vape products and price tags" class="w-full h-48 object-cover"
-          height="250" src="https://storage.googleapis.com/a1aa/image/5121477b-04d3-4178-9a47-840ca14d15ea.jpg"
-          width="400" />
-        <div class="p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-3">
-            Exclusive Discounts for Members
-          </h3>
-          <p class="text-gray-700 mb-4 text-sm">
-            Sign up today and enjoy special discounts and offers on all our
-            vape products.
-          </p>
-          <a class="text-red-600 font-semibold hover:underline text-sm" href="#">
-            Read More
-          </a>
-        </div>
-      </article>
-    </div>
-  </section>
-  <!-- Contact Section -->
-  <section aria-label="Contact section" class="bg-gray-900 text-gray-100 py-16 px-4" id="contact">
-    <div class="container mx-auto max-w-4xl">
-      <h2 class="text-3xl font-extrabold mb-8 text-center">Contact Us</h2>
-      <form action="#" class="space-y-6" method="POST" novalidate="">
-        <div>
-          <label class="block mb-2 font-semibold" for="name"> Name </label>
-          <input class="w-full rounded px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
-            id="name" name="name" placeholder="Your full name" required="" type="text" />
-        </div>
-        <div>
-          <label class="block mb-2 font-semibold" for="email"> Email </label>
-          <input class="w-full rounded px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
-            id="email" name="email" placeholder="you@example.com" required="" type="email" />
-        </div>
-        <div>
-          <label class="block mb-2 font-semibold" for="message">
-            Message
-          </label>
-          <textarea class="w-full rounded px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-600"
-            id="message" name="message" placeholder="Write your message here" required="" rows="5"></textarea>
-        </div>
-        <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-3 rounded w-full transition"
-          type="submit">
-          Send Message
-        </button>
-      </form>
-      <div
-        class="mt-12 flex flex-col md:flex-row justify-between text-gray-400 text-sm space-y-6 md:space-y-0 md:space-x-12">
-        <div class="flex items-center space-x-3">
-          <i class="fas fa-map-marker-alt text-red-600 text-lg"> </i>
-          <span> Jl. Jend. Sudirman No. 123, Jakarta, Indonesia </span>
-        </div>
-        <div class="flex items-center space-x-3">
-          <i class="fas fa-phone-alt text-red-600 text-lg"> </i>
-          <span> +62 812-3456-7890 </span>
-        </div>
-        <div class="flex items-center space-x-3">
-          <i class="fas fa-envelope text-red-600 text-lg"> </i>
-          <span> info@twonevape.com </span>
-        </div>
-      </div>
-    </div>
-  </section>
+  <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
+    Produk Terbaru
+  </h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" role="list">
+    <% if (typeof produkList !== 'undefined' && produkList.length > 0) { %> <% produkList.forEach(function(product) { %> <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
+          <img alt="<%= product.alt %>"
+            class="w-full h-48 object-cover" height="300"
+            src="<%= product.foto %>" width="400" /> <div class="p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              <%= product.nama_produk %> </h3>
+            <p class="text-red-600 font-bold text-xl mb-4"><%= product.harga %></p> <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
+              Add to Cart
+            </button>
+          </div>
+        </article>
+      <% }); %>
+    <% } else { %>
+      <p class="text-center text-gray-700">No products available.</p>
+    <% } %>
+  </div>
+</section>
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-400 py-8 px-4">
     <div
