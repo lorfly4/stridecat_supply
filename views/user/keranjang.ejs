@@ -1,0 +1,199 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Shopee Cart
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+   /* Custom scrollbar for the container */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #d1d5db;
+      border-radius: 10px;
+    }
+  </style>
+ </head>
+ <body class="bg-[#f5f5f7] font-sans text-[13px] text-[#222222]">
+    <header class="border-b border-gray-200">
+    <div class="container mx-auto px-4 flex items-center justify-between py-4">
+      <a class="flex items-center space-x-2" href="#">
+        <img alt="Twone Vape logo with stylized text and vape icon" class="h-12 w-auto" height="50"
+          src="https://storage.googleapis.com/a1aa/image/2309b1be-cc9a-4356-5dfe-5d0f739b764a.jpg" width="150" />
+      </a>
+      <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
+        <a class="hover:text-red-600 transition" href="/landing"> Home </a>
+        <a class="hover:text-red-600 transition" href="/landing#products"> Products </a>
+      </nav>
+      <div class="hidden md:flex items-center space-x-4">
+        <button aria-label="Search" class="text-gray-700 hover:text-red-600 transition focus:outline-none">
+          <i class="fas fa-search text-lg"> </i>
+        </button>
+        <button aria-label="Shopping Cart"
+        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
+        <a class="fas fa-shopping-cart text-lg" href="/keranjang"> </a>
+        <span
+        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+        <%= keranjangList ? keranjangList.length : 0 %>
+    </span>
+</button>
+<div class="relative"></div>
+    <button aria-label="User Account" class="text-gray-700 hover:text-red-600 transition focus:outline-none flex items-center space-x-2" onclick="toggleMenu()" type="button">
+        <i class="fas fa-user text-lg"></i>
+        <span><%= users && users.name ? users.name : 'Account' %></span>
+        <i class="fas fa-caret-down ml-1"></i>
+    </button>
+    <div id="accountMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+        <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
+    </div>
+</div>
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('accountMenu');
+        menu.classList.toggle('hidden');
+    }
+    // Close menu when clicking outside
+    document.addEventListener('click', function (e) {
+        const btn = document.querySelector('[onclick="toggleMenu()"]');
+        const menu = document.getElementById('accountMenu');
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+</script>
+      </div>
+      <button aria-label="Toggle menu" class="md:hidden text-gray-700 hover:text-red-600 focus:outline-none"
+        id="mobile-menu-button">
+        <i class="fas fa-bars text-2xl"> </i>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <nav aria-label="Mobile menu" class="hidden md:hidden bg-white border-t border-gray-200" id="mobile-menu">
+      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
+        href="/">
+        Home
+      </a>
+      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
+        href="#products">
+        Products
+      </a>
+        <script>
+          function toggleMenu() {
+            const menu = document.getElementById('accountMenu');
+            menu.classList.toggle('hidden');
+          }
+
+          // Close menu when clicking outside
+          document.addEventListener('click', function (e) {
+            const btn = document.querySelector('[onclick="toggleMenu()"]');
+            const menu = document.getElementById('accountMenu');
+            if (!btn.contains(e.target) && !menu.contains(e.target)) {
+              menu.classList.add('hidden');
+            }
+          });
+        </script>
+
+      </div>
+      <button aria-label="Shopping Cart"
+        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
+        <i class="fas fa-shopping-cart text-lg"> </i>
+        <span
+          class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+          2
+        </span>
+      </button>
+      </div>
+    </nav>
+  </header>
+  <div class="max-w-[1280px] mx-auto px-4">
+   <div class="pt-4 border border-t-0 border-l-0 border-r-0 border-[#d1d5db] flex items-center gap-2">
+    <span class="text-[13px] font-semibold flex items-center gap-1">
+     Stridecat Supply
+   </div>
+   <div class="space-y-4 mt-4">
+    <!-- First product group -->
+    <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
+     <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
+     <img alt="Per sentrik Kampas Ganda Kopling Vario 150 125 PCX Genuine product image" class="w-[80px] h-[80px] object-contain" height="80" src="https://storage.googleapis.com/a1aa/image/5f6de7be-dc22-4fca-82cd-75f7fc2824cc.jpg" width="80"/>
+     <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="flex-1 min-w-0">
+       <p class="text-[13px] leading-tight truncate">
+        Per sentrik Kampas Ganda Kopling Vario 150 125 PCX Gen...
+       </p>
+       <div class="text-[#6b7280] text-[12px] mt-1 flex flex-wrap gap-1 items-center">
+       </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4 whitespace-nowrap">
+       <div class="text-[13px] font-semibold">
+        Rp34.900
+       </div>
+       <div class="text-[13px] text-[#222222] cursor-pointer select-none flex flex-col items-center">
+        <span>
+         Hapus
+        </span>
+       </div>
+      </div>
+     </div>
+    </div>
+    <!-- Second product group -->
+    <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
+     <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
+     <img alt="Roller Vario 150 125 ESP PCX ADV Beat Genio Scoopy 2021 product image" class="w-[80px] h-[80px] object-contain" height="80" src="https://storage.googleapis.com/a1aa/image/6ca1f321-b5a9-4331-1b20-93662e08ee1e.jpg" width="80"/>
+     <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="flex-1 min-w-0">
+       <p class="text-[13px] leading-tight truncate">
+        Roller Vario 150 125 ESP PCX ADV Beat Genio Scoopy 2021...
+       </p>
+       <div class="text-[#6b7280] text-[12px] mt-1 flex flex-wrap gap-1 items-center">
+       </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 sm:gap-4 whitespace-nowrap">
+       <div class="text-[13px] font-semibold">
+        Rp36.896
+       </div>
+       <div class="text-[13px] text-[#222222] cursor-pointer select-none flex flex-col items-center">
+        <span>
+         Hapus
+        </span>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Bottom voucher and footer -->
+   <div class="mt-6 border border-t-0 border-l-0 border-r-0 border-[#d1d5db] bg-white">
+    <div class="flex flex-wrap items-center gap-2 px-4 py-3 text-[13px] text-[#6b7280]">
+     <input class="w-4 h-4 border border-[#d1d5db]" type="checkbox"/>
+     <span class="whitespace-nowrap">
+      Pilih Semua (19)
+     </span>
+     <button class="text-[#222222] hover:underline whitespace-nowrap">
+      Hapus
+     </button>
+     <div class="ml-auto text-[#3498db] text-right whitespace-nowrap">
+     </div>
+     <div class="text-[#222222] whitespace-nowrap">
+      Total (0 produk):
+      <span class="text-[#3498db] font-semibold text-[18px]">
+       Rp0
+      </span>
+     </div>
+     <button class="bg-[#3498db] text-white px-6 py-2 rounded text-[13px] font-semibold whitespace-nowrap">
+      Checkout
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- Chat button bottom right -->
+  <button class="fixed bottom-4 right-4 bg-[#3498db] text-white px-4 py-2 rounded flex items-center gap-2 shadow-lg text-[13px] font-semibold">
+   <a class="fas fa-comment-alt"  href="https://api.whatsapp.com/send?phone=6285163706606&text=test">
+       Chat
+   </a>
+  </button>
+ </body>
+</html>

@@ -480,6 +480,28 @@ app.post("/daftar", async (req, res) => {
   });
 });
 
+app.get("/keranjang", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  try {
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    const user = userResult.rows[0];
+    const keranjangResult = await db.query("SELECT * FROM keranjang WHERE id_users = $1", [req.session.userId]);
+    let keranjangList = [];
+    if (keranjangResult.rows.length > 0) {
+      keranjangList = keranjangResult.rows;
+    }
+    res.render("user/keranjang", { users: user, keranjangList, message: null });
+  } catch (err) {
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
+  }
+});
+
 app.get("/admin/profil", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
 
