@@ -119,7 +119,12 @@
     <!-- First product group -->
 <% for (const produk of keranjangList) { %>
   <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
-    <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
+    <input
+      class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0 item-checkbox"
+      type="checkbox"
+      data-harga="<%= produk.harga %>"
+      data-jumlah="1"
+    />
     <img alt="<%= produk.nama_produk %>" class="w-[80px] h-[80px] object-contain" height="80" src="<%= produk.foto %>" width="80"/>
     <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div class="flex-1 min-w-0">
@@ -163,29 +168,38 @@
    </div>
   </div>
   <script>
-    const selectAllCheckbox = (checkbox) => {
-      const checkboxes = document.querySelectorAll('input[type=checkbox]');
-      checkboxes.forEach((item) => {
-        item.checked = checkbox.checked;
-      });
-      calculateTotal();
-    }
-
-    const calculateTotal = () => {
-      const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
-      const jumlahProduk = checkboxes.length;
-      const totalHarga = checkboxes.reduce((total, item) => {
-        return total + parseInt(item.parentElement.parentElement.querySelector('.text-[#3498db]').textContent.replace('Rp', ''));
-      }, 0);
-      document.getElementById('jumlahProduk').textContent = jumlahProduk;
-      document.getElementById('totalProduk').textContent = jumlahProduk;
-      document.getElementById('totalHarga').textContent = `Rp${totalHarga.toLocaleString('id-ID')}`;
-    }
-
-    document.querySelectorAll('input[type=checkbox]').forEach((item) => {
-      item.addEventListener('change', calculateTotal);
+  function calculateTotal() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    let jumlahProduk = 0;
+    let totalHarga = 0;
+    checkboxes.forEach(cb => {
+      const harga = parseInt(cb.getAttribute('data-harga')) || 0;
+      const jumlah = parseInt(cb.getAttribute('data-jumlah')) || 1;
+      jumlahProduk += jumlah;
+      totalHarga += harga * jumlah;
     });
-  </script>
+    document.getElementById('jumlahProduk').textContent = jumlahProduk;
+    document.getElementById('totalProduk').textContent = jumlahProduk;
+    document.getElementById('totalHarga').textContent = `Rp${totalHarga}`;
+  }
+
+  // Event listener untuk semua checkbox produk
+  document.querySelectorAll('.item-checkbox').forEach(cb => {
+    cb.addEventListener('change', calculateTotal);
+  });
+
+  // Event listener untuk "Pilih Semua"
+  document.getElementById('selectAll').addEventListener('change', function() {
+    const checked = this.checked;
+    document.querySelectorAll('.item-checkbox').forEach(cb => {
+      cb.checked = checked;
+    });
+    calculateTotal();
+  });
+
+  // Inisialisasi total saat halaman dimuat
+  calculateTotal();
+</script>
   <!-- Chat button bottom right -->
   <button class="fixed bottom-4 right-4 bg-[#3498db] text-white px-4 py-2 rounded flex items-center gap-2 shadow-lg text-[13px] font-semibold">
    <a class="fas fa-comment-alt"  href="https://api.whatsapp.com/send?phone=6285163706606&text=test">
@@ -193,4 +207,4 @@
    </a>
   </button>
  </body>
-</html>\
+</html>
