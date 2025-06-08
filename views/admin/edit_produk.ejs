@@ -114,7 +114,15 @@
                       </div>
                       <div class="form-group">
                         <label for="jumlah">Jumlah Produk</label>
-                        <textarea class="form-control" id="jumlah" name="jumlah_barang" value="<%= produk.jumlah_barang ? produk.jumlah_barang : '' %>" placeholder="Masukkan jumlah produk"><%= produk.jumlah_barang  ? produk.jumlah_barang   : '' %></textarea>
+                        <textarea class="form-control" id="jumlah" name="jumlah_barang" placeholder="Masukkan jumlah produk"><%= produk.jumlah_barang ? produk.jumlah_barang : '' %></textarea>
+                      </div>
+                      <div class="form-group">
+                        <label for="kategori">Kategori</label>
+                        <input type="text" class="form-control" id="kategori" name="kategori" value="<%= produk.kategori ? produk.kategori : '' %>" placeholder="Masukkan kategori produk">
+                      </div>
+                      <div class="form-group">
+                        <label for="deskripsi">Deskripsi</label>
+                        <textarea class="form-control" id="deskripsi" name="deskripsi" placeholder="Masukkan deskripsi produk" rows="3"><%= produk.deskripsi ? produk.deskripsi : '' %></textarea>
                       </div>
                       <div class="form-group">
                         <label for="produkImage">Gambar Produk</label>

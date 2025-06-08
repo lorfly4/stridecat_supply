@@ -116,6 +116,7 @@
                 <th>Foto Produk</th>
                 <th>Stok</th>
                 <th>Harga</th>
+                <th>Kategori</th>
                 <th>Aksi</th>
               </tr>
             </thead>
@@ -127,6 +128,7 @@
                     <td><%= produk.nama_produk %></td>
                     <td><img src="<%= produk.foto %>" class="img-fluid" alt="<%= produk.nama_produk %>" width="100"></td>                    <td><%= produk.jumlah_barang %></td>
                     <td>Rp <%= produk.harga %></td>
+                    <td><%= produk.kategori %></td>
                     <td>
                       <a href="/admin/produk/edit/<%= produk.id_produk %>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
                       <a href="/admin/produk/hapus/<%= produk.id_produk %>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus produk ini?')"><i class="fas fa-trash"></i></a>

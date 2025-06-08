@@ -117,78 +117,75 @@
    </div>
    <div class="space-y-4 mt-4">
     <!-- First product group -->
-    <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
-     <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
-     <img alt="Per sentrik Kampas Ganda Kopling Vario 150 125 PCX Genuine product image" class="w-[80px] h-[80px] object-contain" height="80" src="https://storage.googleapis.com/a1aa/image/5f6de7be-dc22-4fca-82cd-75f7fc2824cc.jpg" width="80"/>
-     <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+<% for (const produk of keranjangList) { %>
+  <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
+    <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
+    <img alt="<%= produk.nama_produk %>" class="w-[80px] h-[80px] object-contain" height="80" src="<%= produk.foto %>" width="80"/>
+    <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div class="flex-1 min-w-0">
-       <p class="text-[13px] leading-tight truncate">
-        Per sentrik Kampas Ganda Kopling Vario 150 125 PCX Gen...
-       </p>
-       <div class="text-[#6b7280] text-[12px] mt-1 flex flex-wrap gap-1 items-center">
-       </div>
+        <p class="text-[13px] leading-tight truncate">
+          <%= produk.nama_produk %>
+        </p>
       </div>
       <div class="flex flex-wrap items-center gap-2 sm:gap-4 whitespace-nowrap">
-       <div class="text-[13px] font-semibold">
-        Rp34.900
-       </div>
-       <div class="text-[13px] text-[#222222] cursor-pointer select-none flex flex-col items-center">
-        <span>
-         Hapus
-        </span>
-       </div>
+        <div class="text-[13px] font-semibold">
+          Rp<%= produk.harga %>
+        </div>
+        <div class="text-[13px] text-[#222222] cursor-pointer select-none flex flex-col items-center">
+          <span>Hapus</span>
+        </div>
       </div>
-     </div>
     </div>
-    <!-- Second product group -->
-    <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
-     <input class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0" type="checkbox"/>
-     <img alt="Roller Vario 150 125 ESP PCX ADV Beat Genio Scoopy 2021 product image" class="w-[80px] h-[80px] object-contain" height="80" src="https://storage.googleapis.com/a1aa/image/6ca1f321-b5a9-4331-1b20-93662e08ee1e.jpg" width="80"/>
-     <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div class="flex-1 min-w-0">
-       <p class="text-[13px] leading-tight truncate">
-        Roller Vario 150 125 ESP PCX ADV Beat Genio Scoopy 2021...
-       </p>
-       <div class="text-[#6b7280] text-[12px] mt-1 flex flex-wrap gap-1 items-center">
-       </div>
-      </div>
-      <div class="flex flex-wrap items-center gap-2 sm:gap-4 whitespace-nowrap">
-       <div class="text-[13px] font-semibold">
-        Rp36.896
-       </div>
-       <div class="text-[13px] text-[#222222] cursor-pointer select-none flex flex-col items-center">
-        <span>
-         Hapus
-        </span>
-       </div>
-      </div>
-     </div>
-    </div>
-   </div>
+  </div>
+<% } %>
    <!-- Bottom voucher and footer -->
    <div class="mt-6 border border-t-0 border-l-0 border-r-0 border-[#d1d5db] bg-white">
     <div class="flex flex-wrap items-center gap-2 px-4 py-3 text-[13px] text-[#6b7280]">
-     <input class="w-4 h-4 border border-[#d1d5db]" type="checkbox"/>
+     <input class="w-4 h-4 border border-[#d1d5db]" type="checkbox" id="selectAll" onchange="selectAllCheckbox(this)"/>
      <span class="whitespace-nowrap">
-      Pilih Semua (19)
+      Pilih Semua (<span id="jumlahProduk">0</span>)
      </span>
-     <button class="text-[#222222] hover:underline whitespace-nowrap">
+     <button class="text-[#222222] hover:underline whitespace-nowrap" id="hapusProduk">
       Hapus
      </button>
      <div class="ml-auto text-[#3498db] text-right whitespace-nowrap">
      </div>
      <div class="text-[#222222] whitespace-nowrap">
-      Total (0 produk):
-      <span class="text-[#3498db] font-semibold text-[18px]">
+      Total (<span id="totalProduk">0</span> produk):
+      <span class="text-[#3498db] font-semibold text-[18px]" id="totalHarga">
        Rp0
       </span>
      </div>
-     <button class="bg-[#3498db] text-white px-6 py-2 rounded text-[13px] font-semibold whitespace-nowrap">
+     <button class="bg-[#3498db] text-white px-6 py-2 rounded text-[13px] font-semibold whitespace-nowrap" id="checkout">
       Checkout
      </button>
     </div>
    </div>
   </div>
+  <script>
+    const selectAllCheckbox = (checkbox) => {
+      const checkboxes = document.querySelectorAll('input[type=checkbox]');
+      checkboxes.forEach((item) => {
+        item.checked = checkbox.checked;
+      });
+      calculateTotal();
+    }
+
+    const calculateTotal = () => {
+      const checkboxes = document.querySelectorAll('input[type=checkbox]:checked');
+      const jumlahProduk = checkboxes.length;
+      const totalHarga = checkboxes.reduce((total, item) => {
+        return total + parseInt(item.parentElement.parentElement.querySelector('.text-[#3498db]').textContent.replace('Rp', ''));
+      }, 0);
+      document.getElementById('jumlahProduk').textContent = jumlahProduk;
+      document.getElementById('totalProduk').textContent = jumlahProduk;
+      document.getElementById('totalHarga').textContent = `Rp${totalHarga.toLocaleString('id-ID')}`;
+    }
+
+    document.querySelectorAll('input[type=checkbox]').forEach((item) => {
+      item.addEventListener('change', calculateTotal);
+    });
+  </script>
   <!-- Chat button bottom right -->
   <button class="fixed bottom-4 right-4 bg-[#3498db] text-white px-4 py-2 rounded flex items-center gap-2 shadow-lg text-[13px] font-semibold">
    <a class="fas fa-comment-alt"  href="https://api.whatsapp.com/send?phone=6285163706606&text=test">
@@ -196,4 +193,4 @@
    </a>
   </button>
  </body>
-</html>
+</html>\

@@ -180,7 +180,7 @@ app.get("/admin/produk/tambah", async (req, res) => {
 });
 
 app.post("/admin/produk/tambah", async (req, res) => {
-  const { name, jumlah_produk, harga } = req.body;
+  const { name, jumlah_produk, harga, kategori, deskripsi } = req.body;
   const foto = req.files ? req.files.foto : null;
 
   if (!name || !jumlah_produk || !harga || !foto) {
@@ -196,7 +196,7 @@ app.post("/admin/produk/tambah", async (req, res) => {
     }
     try {
       await db.query(
-        "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang) VALUES ($1, $2, $3, $4)",
+        "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang, kategori, deskripsi) VALUES ($1, $2, $3, $4)",
         [name, `/img/${fotoName}`, harga, jumlah_produk]
       );
       res.redirect("/admin/produk?success=true");
@@ -224,7 +224,7 @@ app.get("/admin/produk/edit/:id", async (req, res) => {
 
 app.post("/admin/produk/edit/:id", async (req, res) => {
   const produkId = req.params.id;
-  const { name, jumlah_barang, harga } = req.body;
+  const { name, jumlah_barang, harga, kategori, deskripsi } = req.body;
   let foto = req.files ? req.files.foto : null;
 
   try {
@@ -235,8 +235,8 @@ app.post("/admin/produk/edit/:id", async (req, res) => {
     const updateProduk = async () => {
       try {
         await db.query(
-          "UPDATE produk SET nama_produk=$1, jumlah_barang=$2, harga=$3, foto=$4 WHERE id_produk=$5",
-          [name, jumlah_barang, harga, fotoPath, produkId]
+          "UPDATE produk SET nama_produk=$1, jumlah_barang=$2, harga=$3, kategori=$4, deskripsi=$5, foto=$6 WHERE id_produk=$7",
+          [name, jumlah_barang, harga, kategori, deskripsi, fotoPath, produkId]
         );
         res.redirect("/admin/produk?success=true");
       } catch (err) {
@@ -355,9 +355,45 @@ app.get("/admin/history/:id/hapus", async (req, res) => {
 });
 
 
-app.get("/", (req, res) => {
-  res.render("index");
+app.get("/", async (req, res) => {
+  try {
+    const produkResult = await db.query("SELECT * FROM produk");
+    let produkList = [];
+    if (produkResult.rows.length > 0) {
+      produkList = produkResult.rows;
+    }
+    res.render("index", {
+      message: null,
+      produkList
+    });
+  } catch (err) {
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
+  }
 });
+app.get("/produk/:id_produk", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  const id_produk = req.params.id_produk;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = result.rows[0];
+    const produkResult = await db.query("SELECT * FROM produk WHERE id_produk = $1", [id_produk]);
+    if (produkResult.rows.length === 0) {
+      return res.status(404).json({ error: "Produk tidak ditemukan" });
+    }
+    const produk = produkResult.rows[0];
+    res.render("user/produk", { users: user, produk, message: null });
+  } catch (err) {
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
+  }
+});
+  
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -490,7 +526,13 @@ app.get("/keranjang", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
     const user = userResult.rows[0];
-    const keranjangResult = await db.query("SELECT * FROM keranjang WHERE id_users = $1", [req.session.userId]);
+    const keranjangResult = await db.query(`
+      SELECT k.*, p.nama_produk, p.harga, p.foto 
+      FROM keranjang k 
+      JOIN produk p ON k.id_produk = p.id_produk 
+      WHERE k.id_users = $1`, 
+      [req.session.userId]
+    );
     let keranjangList = [];
     if (keranjangResult.rows.length > 0) {
       keranjangList = keranjangResult.rows;
@@ -499,6 +541,22 @@ app.get("/keranjang", async (req, res) => {
   } catch (err) {
     console.error("Error querying database:", err);
     res.status(500).json({ error: "Error while querying database" });
+  }
+});
+
+app.post("/keranjang/tambah/:id_produk", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  const id_produk = req.params.id_produk;
+  try {
+    await db.query(
+      "INSERT INTO keranjang (id_users, id_produk) VALUES ($1, $2)",
+      [req.session.userId, id_produk]
+    );
+    res.redirect("/keranjang");
+  } catch (err) {
+    res.status(500).json({ error: "Gagal menambahkan ke keranjang" });
   }
 });
 

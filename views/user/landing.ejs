@@ -58,42 +58,47 @@
           <i class="fas fa-search text-lg"> </i>
         </button>
         <button aria-label="Shopping Cart"
-        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
-        <a class="fas fa-shopping-cart text-lg" href="/keranjang"> </a>
-        <span
-        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-        <%= keranjangList ? keranjangList.length : 0 %>
-    </span>
-</button>
-<div class="relative"></div>
-    <button aria-label="User Account" class="text-gray-700 hover:text-red-600 transition focus:outline-none flex items-center space-x-2" onclick="toggleMenu()" type="button">
-        <i class="fas fa-user text-lg"></i>
-        <span><%= users && users.name ? users.name : 'Account' %></span>
-        <i class="fas fa-caret-down ml-1"></i>
-    </button>
-    <div id="accountMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
-        <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
-    </div>
-</div>
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById('accountMenu');
-        menu.classList.toggle('hidden');
-    }
-    // Close menu when clicking outside
-    document.addEventListener('click', function (e) {
-        const btn = document.querySelector('[onclick="toggleMenu()"]');
-        const menu = document.getElementById('accountMenu');
-        if (!btn.contains(e.target) && !menu.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-</script>
+          class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
+          <a class="fas fa-shopping-cart text-lg" href="/keranjang"> </a>
+          <span
+            class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+            <%= keranjangList ? keranjangList.length : 0 %>
+          </span>
+        </button>
+        <div class="relative"></div>
+        <button aria-label="User Account"
+          class="text-gray-700 hover:text-red-600 transition focus:outline-none flex items-center space-x-2"
+          onclick="toggleMenu()" type="button">
+          <i class="fas fa-user text-lg"></i>
+          <span>
+            <%= users && users.name ? users.name : 'Account' %>
+          </span>
+          <i class="fas fa-caret-down ml-1"></i>
+        </button>
+        <div id="accountMenu"
+          class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+          <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
+        </div>
       </div>
-      <button aria-label="Toggle menu" class="md:hidden text-gray-700 hover:text-red-600 focus:outline-none"
-        id="mobile-menu-button">
-        <i class="fas fa-bars text-2xl"> </i>
-      </button>
+      <script>
+        function toggleMenu() {
+          const menu = document.getElementById('accountMenu');
+          menu.classList.toggle('hidden');
+        }
+        // Close menu when clicking outside
+        document.addEventListener('click', function (e) {
+          const btn = document.querySelector('[onclick="toggleMenu()"]');
+          const menu = document.getElementById('accountMenu');
+          if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+          }
+        });
+      </script>
+    </div>
+    <button aria-label="Toggle menu" class="md:hidden text-gray-700 hover:text-red-600 focus:outline-none"
+      id="mobile-menu-button">
+      <i class="fas fa-bars text-2xl"> </i>
+    </button>
     </div>
     <!-- Mobile Menu -->
     <nav aria-label="Mobile menu" class="hidden md:hidden bg-white border-t border-gray-200" id="mobile-menu">
@@ -105,31 +110,32 @@
         href="#">
         Products
       </a>
-        <script>
-          function toggleMenu() {
-            const menu = document.getElementById('accountMenu');
-            menu.classList.toggle('hidden');
-          }
+      <script>
+        function toggleMenu() {
+          const menu = document.getElementById('accountMenu');
+          menu.classList.toggle('hidden');
+        }
 
-          // Close menu when clicking outside
-          document.addEventListener('click', function (e) {
-            const btn = document.querySelector('[onclick="toggleMenu()"]');
-            const menu = document.getElementById('accountMenu');
-            if (!btn.contains(e.target) && !menu.contains(e.target)) {
-              menu.classList.add('hidden');
-            }
-          });
-        </script>
+        // Close menu when clicking outside
+        document.addEventListener('click', function (e) {
+          const btn = document.querySelector('[onclick="toggleMenu()"]');
+          const menu = document.getElementById('accountMenu');
+          if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+          }
+        });
+      </script>
 
       </div>
-      <button aria-label="Shopping Cart"
+      <a aria-label="Shopping Cart" href="/keranjang"
         class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
         <i class="fas fa-shopping-cart text-lg"> </i>
         <span
           class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-          2
+          <%= keranjangList ? keranjangList.length : 0 %>
+
         </span>
-      </button>
+      </a>
       </div>
     </nav>
   </header>
@@ -157,27 +163,39 @@
   </section>
   <!-- Produk Terbaru -->
   <section class="container mx-auto px-4 py-16" id="products">
-  <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
-    Produk Terbaru
-  </h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" role="list">
-    <% if (typeof produkList !== 'undefined' && produkList.length > 0) { %> <% produkList.forEach(function(product) { %> <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
-          <img alt="<%= product.alt %>"
-            class="w-full h-48 object-cover" height="300"
-            src="<%= product.foto %>" width="400" /> <div class="p-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">
-              <%= product.nama_produk %> </h3>
-            <p class="text-red-600 font-bold text-xl mb-4"><%= product.harga %></p> <button class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
-              Add to Cart
-            </button>
-          </div>
-        </article>
-      <% }); %>
-    <% } else { %>
-      <p class="text-center text-gray-700">No products available.</p>
-    <% } %>
-  </div>
-</section>
+    <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center">
+      Produk Terbaru
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8" role="list">
+      <% if (typeof produkList !=='undefined' && produkList.length> 0) { %> <% produkList.forEach(function(product) { %>
+          <article class="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition">
+            <img alt="<%= product.alt %>" class="w-full h-48 object-cover" height="300" src="<%= product.foto %>"
+              width="400" />
+            <div class="p-4">
+              <form action="/produk/<%= product.id_produk %>" method="get">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                  <button type="submit" class="hover:underline">
+                    <%= product.nama_produk %>
+                  </button>
+                </h3>
+              </form>
+              <p class="text-red-600 font-bold text-xl mb-4">
+                <%= product.harga %>
+              </p>
+              <form action="/keranjang/tambah/<%= product.id_produk %>" method="post">
+                <button type="submit"
+                  class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition">
+                  Add to Cart
+                </button>
+              </form>
+            </div>
+          </article>
+          <% }); %>
+            <% } else { %>
+              <p class="text-center text-gray-700">No products available.</p>
+              <% } %>
+    </div>
+  </section>
   <!-- Footer -->
   <footer class="bg-gray-900 text-gray-400 py-8 px-4">
     <div
