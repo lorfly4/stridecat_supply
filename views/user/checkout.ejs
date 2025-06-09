@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,64 +13,78 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       background: #f9fafb;
       padding: 2rem;
       color: #333;
     }
+
     .container {
       max-width: 800px;
       margin: auto;
       background: #fff;
       padding: 2rem;
       border-radius: 1rem;
-      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     }
+
     h2 {
       margin-bottom: 1rem;
       font-size: 1.5rem;
       color: #111;
     }
+
     .section {
       margin-bottom: 2rem;
     }
+
     .product {
       display: flex;
       gap: 1rem;
       border-bottom: 1px solid #eee;
       padding: 1rem 0;
     }
+
     .product img {
       width: 80px;
       border-radius: 0.5rem;
     }
+
     .product-details {
       flex: 1;
     }
+
     .input-group {
       margin-top: 0.5rem;
     }
+
     .input-group label {
       display: block;
       margin-bottom: 0.3rem;
       font-size: 0.9rem;
     }
-    .input-group input, .input-group select {
+
+    .input-group input,
+    .input-group select {
       width: 100%;
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 0.5rem;
     }
+
     .summary {
       background: #f1f5f9;
       padding: 1rem;
       border-radius: 0.75rem;
     }
+
     .summary-item {
       display: flex;
       justify-content: space-between;
       margin-bottom: 0.5rem;
     }
+
     .btn-checkout {
       background: #3b82f6;
       color: white;
@@ -82,33 +97,43 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+
     .btn-checkout:hover {
       background: #2563eb;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h2>Checkout</h2>
 
     <div class="section">
       <h3>Produk</h3>
-      <div class="product">
-        <img src="https://via.placeholder.com/80" alt="produk" />
-        <div class="product-details">
-          <strong>Nama Produk</strong>
-          <div>Varian: Merah</div>
-          <div>Jumlah: 2</div>
-          <div>Harga: Rp50.000</div>
-        </div>
-      </div>
+      <% if (produkList && produkList.length > 0) { %>
+        <% produkList.forEach(function(produk) { %>
+          <div class="product">
+            <img src="<%= produk.foto %>" alt="<%= produk.nama_produk %>" />
+            <div class="product-details">
+              <strong>
+                <%= produk.nama_produk %>
+              </strong>
+              <div>Jumlah: 1</div>
+              <div>Harga: Rp<%= produk.harga.toLocaleString('id-ID') %></div>
+            </div>
+          </div>
+          <% }) %>
+            <% } else { %>
+              <div>Tidak ada produk yang dipilih.</div>
+              <% } %>
     </div>
+          <form action="/bayar" method="post">
 
     <div class="section">
       <h3>Metode Pembayaran</h3>
       <div class="input-group">
         <label for="payment">Pilih Pembayaran</label>
-        <select id="payment">
+        <select id="payment" name="metode_pembayaran">
           <option>Transfer Bank</option>
           <option>GoPay</option>
           <option>ShopeePay</option>
@@ -121,17 +146,33 @@
       <h3>Ringkasan Pembayaran</h3>
       <div class="summary-item">
         <span>Subtotal</span>
-        <span>Rp100.000</span>
-      </div>
-      <div class="summary-item">
-        <span>Ongkir</span>
-        <span>Rp10.000</span>
+        <span>Rp<%= typeof total !== 'undefined' ? Number(total).toLocaleString('id-ID') : '0' %></span>
       </div>
       <div class="summary-item">
         <strong>Total</strong>
-        <strong>Rp110.000</strong>
+        <strong>
+          Rp<%= typeof total !== 'undefined' ? Number(total).toLocaleString('id-ID') : '0' %>
+        </strong>
       </div>
-      <button class="btn-checkout">Bayar Sekarang</button>
+  <% if (produkList && produkList.length > 0) { %>
+    <% produkList.forEach(function(produk) { %>
+      <input type="hidden" name="produk_id" value="<%= produk.id_produk %>">
+    <% }) %>
+    <input type="hidden" name="total" value="<%= typeof total !== 'undefined' ? Number(total) : 0 %>">
+    <input type="hidden" name="id_user" value="<%= typeof userId !== 'undefined' ? userId : '' %>">
+    <input type="hidden" name="tanggal" value="<%= new Date().toISOString().split('T')[0] %>">
+    <input type="hidden" name="status_pembayaran" value="pending">
+    <input type="hidden" name="status" value="belum bayar">
+    <input type="hidden" name="alamat" value="-">
+    <input type="hidden" name="resi" value="-">
+    <input type="hidden" name="jasa_pengiriman" value="-">
+
+    <!-- Metode pembayaran diambil dari select, bukan hidden -->
+    <button class="btn-checkout" type="submit">Bayar Sekarang</button>
+  <% } else { %>
+    <button class="btn-checkout" type="button" disabled>Tidak ada produk</button>
+  <% } %>
+</form>
     </div>
   </div>
 </body>

@@ -395,6 +395,54 @@ app.get("/produk/:id_produk", async (req, res) => {
 });
   
 
+app.get("/checkout", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login?next=/checkout");
+  }
+
+  // Ambil produk_id (array) dan total dari query string
+  let produkIds = req.query.produk_id;
+  const total = req.query.total || 0;
+
+  // Jika hanya satu produk, jadikan array
+  if (produkIds && !Array.isArray(produkIds)) {
+    produkIds = [produkIds];
+  }
+
+  if (!produkIds || produkIds.length === 0) {
+    return res.redirect("/keranjang");
+  }
+
+  try {
+    // Ambil detail produk dari database
+    const placeholders = produkIds.map((_, i) => `$${i + 1}`).join(",");
+    const produkQuery = `SELECT * FROM produk WHERE id_produk IN (${placeholders})`;
+    const produkResult = await db.query(produkQuery, produkIds);
+
+    res.render("user/checkout", {
+  produkList: produkResult.rows,
+  total: total,
+  userId: req.session.userId // tambahkan ini
+});
+  } catch (err) {
+    res.status(500).send("Terjadi kesalahan saat mengambil data produk.");
+  }
+});
+
+app.post("/bayar", async (req, res) => {
+  const { id_produk, metode_pembayaran, tanggal, status_pembayaran, status, alamat, resi, jasa_pengiriman } = req.body;
+  try {
+    await db.query(
+      `INSERT INTO history_pembelian (id_produk, id_user, metode_pembayaran, tanggal, status_pembayaran, status, alamat, resi, jasa_pengiriman) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [id_produk, req.session?.userId, metode_pembayaran, tanggal, status_pembayaran, status, alamat, resi, jasa_pengiriman]
+    );
+    res.redirect("/user/bayar");
+  } catch (err) {
+    console.log("Gagal bayar:", err);
+    res.status(500).json({ error: "Gagal bayar" });
+  }
+});
+
 app.get("/login", (req, res) => {
   res.render("login");
 });
