@@ -21,7 +21,7 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
-                    <i class="far fa-user"></i> <span><%= users.nama ? users.nama : 'Guest' %></span>
+                    <i class="far fa-user"></i> <span><%= users.name ? users.name : 'Guest' %></span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <a href="/admin/profil" class="dropdown-item">
@@ -48,7 +48,7 @@
                     <img src="<%= users.foto ? users.foto : '/img/avatar.png' %>" class="img-circle elevation-2" alt="User Image">
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block"><%= users.nama ? users.nama : 'Guest' %></a>
+                    <a href="#" class="d-block"><%= users.name ? users.name : 'Guest' %></a>
                 </div>
             </div>
             <nav class="mt-2">

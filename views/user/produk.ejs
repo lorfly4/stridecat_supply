@@ -40,7 +40,11 @@
         <p class="mt-2 text-gray-700">Kategori: <%= produk.kategori %></p>
         <p class="mt-1 text-gray-700">Stok tersedia: <%= produk.jumlah_barang %> item</p>
 
+<<<<<<< HEAD
         <form action="/keranjang/tambah" method="POST" class="mt-6">
+=======
+        <form action="/keranjang/tambah/<%= produk.id_produk %>" method="POST" class="mt-6">
+>>>>>>> e4dbfbc (update fitur filtering data)
           <input type="hidden" name="id_produk" value="<%= produk.id_produk %>">
           <button type="submit" class="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-md shadow-md transition">Tambah ke Keranjang</button>
         </form>
@@ -53,3 +57,7 @@
   </footer>
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> e4dbfbc (update fitur filtering data)

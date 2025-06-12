@@ -196,8 +196,13 @@ app.post("/admin/produk/tambah", async (req, res) => {
     }
     try {
       await db.query(
+<<<<<<< HEAD
         "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang, kategori, deskripsi) VALUES ($1, $2, $3, $4)",
         [name, `/img/${fotoName}`, harga, jumlah_produk]
+=======
+        "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang, kategori, deskripsi) VALUES ($1, $2, $3, $4, $5, $6)",
+        [name, `/img/${fotoName}`, harga, jumlah_produk, kategori, deskripsi]
+>>>>>>> e4dbfbc (update fitur filtering data)
       );
       res.redirect("/admin/produk?success=true");
     } catch (err) {
@@ -318,7 +323,13 @@ app.get("/admin/history/:id/edit", async (req, res) => {
       console.log("Data history tidak ditemukan untuk edit:", id);
       return res.status(404).send("Data tidak ditemukan");
     }
-    res.render("admin/edit_history", { history: result.rows[0], users: req.session.userId, message: null });
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (userResult.rows.length === 0) {
+      console.log("User not found saat akses edit history");
+      return res.status(404).json({ error: "User not found" });
+    }
+    const user = userResult.rows[0];
+    res.render("admin/edit_history", { history: result.rows[0], users: user, message: null });
   } catch (err) {
     console.log("Gagal ambil data history untuk edit:", err);
     res.status(500).json({ error: "Gagal ambil data history" });
@@ -329,12 +340,12 @@ app.get("/admin/history/:id/edit", async (req, res) => {
 app.post("/admin/history/:id/edit", async (req, res) => {
   if (!req.session.userId) return res.redirect("/login");
   const id = req.params.id;
-  const { status, tanggal, metode_pembayaran, resi, jasa_pengiriman } = req.body;
+  const { status,  resi, jasa_pengiriman } = req.body;
   try {
     await db.query(
-      `UPDATE history_pembelian SET status=$1, tanggal=$2, metode_pembayaran=$3, resi=$4, jasa_pengiriman=$5 WHERE id=$6`,
-      [status, tanggal, metode_pembayaran, resi, jasa_pengiriman, id]
-    );
+  `UPDATE history_pembelian SET status=$1, resi=$2, jasa_pengiriman=$3 WHERE id=$4`,
+  [status, resi, jasa_pengiriman, id]
+);
     res.redirect("/admin/history?success=true");
   } catch (err) {
     console.log("Gagal update history pembelian:", err);
@@ -370,6 +381,7 @@ app.get("/", async (req, res) => {
     console.error("Error querying database:", err);
     res.status(500).json({ error: "Error while querying database" });
   }
+<<<<<<< HEAD
 });
 app.get("/produk/:id_produk", async (req, res) => {
   if (!req.session.userId || req.session.role !== "user") {
@@ -441,7 +453,171 @@ app.post("/bayar", async (req, res) => {
     console.log("Gagal bayar:", err);
     res.status(500).json({ error: "Gagal bayar" });
   }
+=======
+>>>>>>> e4dbfbc (update fitur filtering data)
 });
+app.get("/produk/:id_produk", async (req, res) => {
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  const id_produk = req.params.id_produk;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = result.rows[0];
+    const produkResult = await db.query("SELECT * FROM produk WHERE id_produk = $1", [id_produk]);
+    if (produkResult.rows.length === 0) {
+      return res.status(404).json({ error: "Produk tidak ditemukan" });
+    }
+    const produk = produkResult.rows[0];
+    res.render("user/produk", { users: user, produk, message: null });
+  } catch (err) {
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
+  }
+});
+  
+
+app.get("/checkout", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login?next=/checkout");
+  }
+
+  // Ambil produk_id (array) dan total dari query string
+  let produkIds = req.query.produk_id;
+  const total = parseInt(req.query.total, 10) || 0;
+
+  // Jika hanya satu produk, jadikan array
+  if (produkIds && !Array.isArray(produkIds)) {
+    produkIds = [produkIds];
+  }
+
+  if (!produkIds || produkIds.length === 0) {
+    return res.redirect("/keranjang");
+  }
+
+  try {
+    // Ambil detail produk dari database
+    const placeholders = produkIds.map((_, i) => `$${i + 1}`).join(",");
+    const produkQuery = `SELECT * FROM produk WHERE id_produk IN (${placeholders})`;
+    const produkResult = await db.query(produkQuery, produkIds);
+
+    // let totalHarga = 0;
+    // produkResult.rows.forEach(produk => {
+    //   totalHarga += produk.harga;
+    // });
+
+    res.render("user/checkout", {
+      produkList: produkResult.rows,
+      total,
+      userId: req.session.userId // tambahkan ini
+    });
+  } catch (err) {
+    res.status(500).send("Terjadi kesalahan saat mengambil data produk.");
+  }
+});
+
+app.post("/bayar", async (req, res) => {
+  if (!req.session.userId) return res.redirect("/login");
+
+  let {
+    id_produk,
+    harga,
+    metode_pembayaran,
+    tanggal,
+    status_pembayaran,
+    status,
+    alamat,
+    resi,
+    jasa_pengiriman
+  } = req.body;
+
+  // Pastikan id_produk selalu berupa array
+  if (!Array.isArray(id_produk)) {
+    id_produk = [id_produk];
+  }
+
+  try {
+    if (!id_produk || id_produk.length === 0) {
+      return res.status(400).send("Produk tidak boleh kosong.");
+    }
+
+    for (const i in id_produk) {
+      // Tambahkan ke history_pembelian
+      await db.query(
+        `INSERT INTO history_pembelian 
+          (id_produk, id_user, metode_pembayaran, tanggal, status_pembayaran, status, alamat, resi, jasa_pengiriman, harga) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+        [id_produk[i], req.session.userId, metode_pembayaran, tanggal, status_pembayaran, status, alamat, resi, jasa_pengiriman, harga[i]]
+      );
+
+      // Hapus dari keranjang
+      await db.query("DELETE FROM keranjang WHERE id_produk = $1 AND id_users = $2", [id_produk[i], req.session.userId]);
+    }
+
+res.redirect(`/user/bayar?success=true&metode=${metode_pembayaran}&total=${req.body.total || 0}`);  } catch (err) {
+    console.error("Gagal bayar:", err);
+    res.status(500).json({ error: "Terjadi kesalahan saat memproses pembayaran" });
+  }
+});
+
+app.get("/user/bayar", (req, res) => {
+  const metode = req.query.metode?.toLowerCase();
+  const harga = req.query.total || 0;
+res.render("user/bayar", {
+  metode_pembayaran: metode || "unknown",
+  totalBayar: Number(harga)
+});
+  console.log(harga);
+});
+
+app.get("/user/pesanan", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const result = await db.query(
+      `SELECT hp.*, p.nama_produk, p.foto, p.harga
+       FROM history_pembelian hp
+       JOIN produk p ON hp.id_produk = p.id_produk
+       WHERE hp.id_user = $1
+       ORDER BY hp.tanggal DESC`,
+      [req.session.userId]
+    );
+
+    const usersResult = await db.query(
+      "SELECT * FROM users WHERE id = $1",
+      [req.session.userId]
+    );
+
+    const user = usersResult.rows[0];
+
+    const keranjangResult = await db.query(
+      "SELECT * FROM keranjang WHERE id_users = $1",
+      [req.session.userId]
+    );
+
+    let keranjangList = [];
+    if (keranjangResult.rows.length > 0) {
+      keranjangList = keranjangResult.rows;
+    }
+
+    res.render("user/pesanan", {
+      pesananList: result.rows,
+      users: user,
+      keranjangList,
+      message: null
+    });
+  } catch (err) {
+    console.error("Error querying pesanan:", err);
+    res.status(500).json({ error: "Error while querying pesanan" });
+  }
+});
+
+
 
 app.get("/login", (req, res) => {
   res.render("login");
@@ -513,7 +689,52 @@ app.get("/landing", async (req, res) => {
       users: user,
       message: null,
       keranjangList,
+<<<<<<< HEAD
       produkList
+=======
+      produkList,
+>>>>>>> e4dbfbc (update fitur filtering data)
+    });
+  } catch (err) {
+    console.error("Error querying database:", err);
+    res.status(500).json({ error: "Error while querying database" });
+  }
+});
+<<<<<<< HEAD
+app.get("/produk", async (req, res) => {
+=======
+app.get("/users/search", async (req, res) => {
+>>>>>>> e4dbfbc (update fitur filtering data)
+  if (!req.session.userId || req.session.role !== "user") {
+    return res.redirect("/login");
+  }
+  try {
+    const result = await db.query("SELECT * FROM users WHERE id = $1", [req.session.userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User  not found" });
+    }
+    const user = result.rows[0];
+<<<<<<< HEAD
+=======
+    const { search } = req.query;
+    const produkResult = await db.query(
+      "SELECT * FROM produk WHERE nama_produk ILIKE '%' || $1 || '%' OR kategori ILIKE '%' || $1 || '%' ORDER BY nama_produk ASC",
+      [search]
+    );
+    let produkList = [];
+    if (produkResult.rows.length > 0) {
+      produkList = produkResult.rows;
+    }
+    const keranjangResult = await db.query("SELECT * FROM keranjang WHERE id_users = $1", [req.session.userId]);
+    let keranjangList = [];
+    if (keranjangResult.rows.length > 0) {
+      keranjangList = keranjangResult.rows;
+    }
+    res.render("user/search-produk", {
+      users: user,
+      message: null,
+      produkList,
+      keranjangList,
     });
   } catch (err) {
     console.error("Error querying database:", err);
@@ -530,6 +751,7 @@ app.get("/produk", async (req, res) => {
       return res.status(404).json({ error: "User  not found" });
     }
     const user = result.rows[0];
+>>>>>>> e4dbfbc (update fitur filtering data)
     res.render("user/produk", { users: user, message: null });
   } catch (err) {
     res.status(500).json({ error: "Error querying database" });

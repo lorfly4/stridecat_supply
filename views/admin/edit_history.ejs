@@ -24,7 +24,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
               <i class="far fa-user"></i>
-              <span><%= users.nama ? users.nama : 'Guest' %></span>
+              <span><%= users.name ? users.name : 'Guest' %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <a href="/profil" class="dropdown-item">
@@ -56,7 +56,7 @@
             </div>
             <div class="info">
               <a href="#" class="d-block"
-                ><%= users.nama ? users.nama : 'Guest' %></a
+                ><%= users.name ? users.name : 'Guest' %></a
               >
             </div>
           </div>
@@ -67,19 +67,19 @@
               role="menu"
             >
               <li class="nav-item">
-                <a href="/landing" class="nav-link active">
+                <a href="/admin/landing" class="nav-link active">
                   <i class="nav-icon fas fa-home"></i>
                   <p>Home</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/profil" class="nav-link">
+                <a href="/admin/profil" class="nav-link">
                   <i class="nav-icon fas fa-user"></i>
                   <p>Profil</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/produk" class="nav-link">
+                <a href="/admin/produk" class="nav-link">
                   <i class="nav-icon fas fa-book"></i>
                   <p>Produk</p>
                 </a>
@@ -115,7 +115,7 @@
                   <div class="card-header">
                     <h3 class="card-title">Edit Data History</h3>
                   </div>
-                  <form action="/history/<%= history.id %>/edit" method="post">
+                  <form action="/admin/history/<%= history.id %>/edit" method="post">
                     <div class="card-body">
                       <div class="form-group">
                         <label>Status</label>
@@ -125,26 +125,6 @@
                           <option value="sedang dikemas" <%= history.status === 'sedang dikemas' ? 'selected' : '' %>>Sedang di Kemas</option>
                           <option value="dikirim" <%= history.status === 'dikirim' ? 'selected' : '' %>>Dikirim</option>
                         </select>
-                      </div>
-                      <div class="form-group">
-                        <label>Tanggal</label>
-                        <input
-                          type="date"
-                          class="form-control"
-                          name="tanggal"
-                          value="<%= history.tanggal ? history.tanggal.toISOString ? history.tanggal.toISOString().slice(0,10) : history.tanggal.substring(0,10) : '' %>"
-                          required
-                        />
-                      </div>
-                      <div class="form-group">
-                        <label>Metode Pembayaran</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          name="metode_pembayaran"
-                          value="<%= history.metode_pembayaran %>"
-                          required
-                        />
                       </div>
                       <div class="form-group">
                         <label>Resi</label>

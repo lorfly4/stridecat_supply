@@ -24,7 +24,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
               <i class="far fa-user"></i>
-              <span><%= users.nama ? users.nama : 'Guest' %></span>
+              <span><%= users.name ? users.name : 'Guest' %></span>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
               <a href="/admin/profil" class="dropdown-item">
@@ -56,7 +56,7 @@
             </div>
             <div class="info">
               <a href="#" class="d-block"
-                ><%= users.nama ? users.nama : 'Guest' %></a
+                ><%= users.name ? users.name : 'Guest' %></a
               >
             </div>
           </div>
@@ -215,14 +215,14 @@
                               Tutup
                             </button>
                             <a
-                              href="/history/<%= item.id %>/hapus"
+                              href="/admin/history/<%= item.id %>/hapus"
                               class="btn btn-danger"
                               onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"
                             >
                               Hapus
                             </a>
                             <a
-                              href="/history/<%= item.id %>/edit"
+                              href="/admin/history/<%= item.id %>/edit"
                               class="btn btn-warning"
                             >
                               Edit

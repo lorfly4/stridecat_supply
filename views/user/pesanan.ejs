@@ -1,0 +1,240 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>Stridecat Supply Cart</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+      <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* Custom scrollbar for the container */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background-color: #d1d5db;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-light font-sans text-dark">
+  <header class="border-b border-gray-200">
+    <div class="container mx-auto px-4 flex items-center justify-between py-4">
+      <a class="flex items-center space-x-2" href="#">
+        <img alt="Twone Vape logo with stylized text and vape icon" class="h-12 w-auto" height="50"
+          src="https://storage.googleapis.com/a1aa/image/2309b1be-cc9a-4356-5dfe-5d0f739b764a.jpg" width="150" />
+      </a>
+      <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
+        <a class="hover:text-red-600 transition" href="/landing"> Home </a>
+        <a class="hover:text-red-600 transition" href="/landing#products"> Products </a>
+      </nav>
+      <div class="hidden md:flex items-center space-x-4">
+        <button aria-label="Search" class="text-gray-700 hover:text-red-600 transition focus:outline-none">
+          <i class="fas fa-search text-lg"> </i>
+        </button>
+        <button aria-label="Shopping Cart"
+        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
+        <a class="fas fa-shopping-cart text-lg" href="/keranjang"> </a>
+        <span
+        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+        <%= keranjangList ? keranjangList.length : 0 %>
+    </span>
+</button>
+<div class="relative"></div>
+    <button aria-label="User Account" class="text-gray-700 hover:text-red-600 transition focus:outline-none flex items-center space-x-2" onclick="toggleMenu()" type="button">
+        <i class="fas fa-user text-lg"></i>
+        <span><%= users && users.name ? users.name : 'Account' %></span>
+        <i class="fas fa-caret-down ml-1"></i>
+    </button>
+    <div id="accountMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+    <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
+</div>
+    <div class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+        <a href="/user/pesanan" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Pesanan</a>
+</div>
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById('accountMenu');
+        menu.classList.toggle('hidden');
+    }
+    // Close menu when clicking outside
+    document.addEventListener('click', function (e) {
+        const btn = document.querySelector('[onclick="toggleMenu()"]');
+        const menu = document.getElementById('accountMenu');
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.add('hidden');
+        }
+    });
+</script>
+      </div>
+      <button aria-label="Toggle menu" class="md:hidden text-gray-700 hover:text-red-600 focus:outline-none"
+        id="mobile-menu-button">
+        <i class="fas fa-bars text-2xl"> </i>
+      </button>
+    </div>
+    <!-- Mobile Menu -->
+    <nav aria-label="Mobile menu" class="hidden md:hidden bg-white border-t border-gray-200" id="mobile-menu">
+      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
+        href="/">
+        Home
+      </a>
+      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
+        href="#products">
+        Products
+      </a>
+        <!-- <script>
+          function toggleMenu() {
+            const menu = document.getElementById('accountMenu');
+            menu.classList.toggle('hidden');
+          }
+
+          // Close menu when clicking outside
+          document.addEventListener('click', function (e) {
+            const btn = document.querySelector('[onclick="toggleMenu()"]');
+            const menu = document.getElementById('accountMenu');
+            if (!btn.contains(e.target) && !menu.contains(e.target)) {
+              menu.classList.add('hidden');
+            }
+          });
+        </script> -->
+
+      </div>
+      <button aria-label="Shopping Cart"
+        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
+        <i class="fas fa-shopping-cart text-lg"> </i>
+        <span
+          class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+          2
+        </span>
+      </button>
+      </div>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="pt-4 border-top d-flex align-items-center">
+      <span class="font-weight-bold">
+        Stridecat Supply
+      </span>
+    </div>
+    <div class="mt-4">
+      <h2 class="h4 font-weight-bold text-dark">Pesanan Saya</h2>
+      <div class="d-flex flex-column">
+        <% for (const pesanan of pesananList) { %>
+          <section class="bg-white rounded shadow p-4 mb-3">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Nama</th>
+                  <th>Harga</th>
+                  <th>Status</th>
+                  <th>Detail</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <img src="<%= pesanan.foto %>" alt="<%= pesanan.nama_produk %>" class="img-fluid" width="80">
+                  <td><%= pesanan.nama_produk %></td>
+                  <td>Rp<%= pesanan.harga %></td>
+                  <td><%= pesanan.status %></td>
+                  <td>
+                    <button class="btn btn-primary d-inline-block" data-toggle="modal" data-target="#modal-container-<%= pesanan.id_pesanan %>">
+                        Detail
+                    </button>
+                    <% if (pesanan.status === 'belum bayar') { %>
+                      <a href="/user/bayar?metode=<%= pesanan.metode_pembayaran %>&total=<%= pesanan.harga %>" class="btn btn-success d-inline-block mt-2">Bayar</a>
+                    <% } %>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        <% } %>
+      </div>
+    </div>
+    <% pesananList.forEach(pesanan => { %>
+      <div class="modal fade" id="modal-container-<%= pesanan.id_pesanan %>" tabindex="-1" role="dialog" aria-labelledby="modalLabel<%= pesanan.id_pesanan %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel<%= pesanan.id_pesanan %>">Detail Pesanan</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Nama: <%= pesanan.nama_produk %></p>
+              <p>Harga: Rp<%= pesanan.harga %></p>
+              <p>Status: <%= pesanan.status %></p>
+              <p>Tanggal: <%= pesanan.tanggal %></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+          </div>
+  </div>
+  <div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLabel">Detail Pesanan</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Nama: <span id="nama-pesanan"></span></p>
+          <p>Harga: <span id="harga-pesanan"></span></p>
+          <p>Status: <span id="status-pesanan"></span></p>
+          <p>Tanggal: <span id="tanggal-pesanan"></span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    <% }) %>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('accountMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+      const btn = document.querySelector('[onclick="toggleMenu()"]');
+      const menu = document.getElementById('accountMenu');
+      if (!btn.contains(e.target) && !menu.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    function toggleModal(id) {
+      const modal = $('#modal-container');
+      const nama = document.getElementById('nama-pesanan');
+      const harga = document.getElementById('harga-pesanan');
+      const status = document.getElementById('status-pesanan');
+      const tanggal = document.getElementById('tanggal-pesanan');
+      if (id) {
+        modal.modal('show');
+        const pesanan = pesananList.find(p => p.id_pesanan === id);
+        nama.textContent = pesanan.nama_produk;
+        harga.textContent = `Rp${pesanan.harga.toLocaleString('id-ID')}`;
+        status.textContent = pesanan.status;
+        tanggal.textContent = pesanan.tanggal;
+      } else {
+        modal.modal('hide');
+      }
+    }
+
+    $('#mobile-menu-button').on('click', function () {
+      $('#mobile-menu').toggleClass('d-none');
+    });
+  </script>
+</body>
+</html>

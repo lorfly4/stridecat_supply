@@ -81,10 +81,7 @@
         <div id="accountMenu"
           class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
           <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
-<<<<<<< HEAD
-=======
           <a href="/user/pesanan" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Pesanan</a>
->>>>>>> e4dbfbc (update fitur filtering data)
         </div>
       </div>
       <script>
@@ -187,11 +184,7 @@
                 </h3>
               </form>
               <p class="text-red-600 font-bold text-xl mb-4">
-<<<<<<< HEAD
-                <%= product.harga %>
-=======
                 Rp <%= product.harga.toLocaleString('id-ID') %>
->>>>>>> e4dbfbc (update fitur filtering data)
               </p>
               <form action="/keranjang/tambah/<%= product.id_produk %>" method="post">
                 <button type="submit"

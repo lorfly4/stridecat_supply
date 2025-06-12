@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bayar</title>
+<<<<<<< HEAD
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
@@ -21,10 +22,37 @@
       <% } else if (metode_pembayaran === 'bca') { %>
         <p class="text-lg">Silakan transfer ke rekening BCA berikut:</p>
         <div class="text-xl font-bold">123-456-7890</div>
+=======
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-900">
+  <div class="max-w-md mx-auto p-8 mt-8 bg-white rounded-lg shadow-lg">
+    <div class="text-center">
+      <% if (metode_pembayaran === 'gopay' || metode_pembayaran === 'shopeepay') { %>
+        <p class="text-lg">Silakan transfer ke nomor <%= metode_pembayaran.charAt(0).toUpperCase() + metode_pembayaran.slice(1) %> berikut:</p>
+        <div class="text-2xl font-bold">0857-XXXX-XXXX</div>
+              <h1 class="text-4xl font-bold">Total Bayar: Rp<%= totalBayar.toLocaleString('id-ID') %></h1>
+
+      <% } else if (metode_pembayaran === 'transfer bank' || metode_pembayaran === 'bca') { %>
+        <p class="text-lg">Silakan transfer ke rekening berikut:</p>
+        <div class="text-2xl font-bold">123-456-7890 (BCA)</div>
+      <h1 class="text-4xl font-bold">Total Bayar: Rp<%= totalBayar.toLocaleString('id-ID') %></h1>
+      <% } else if (metode_pembayaran === 'cod (bayar di tempat)') { %>
+        <p class="text-lg text-green-600">Silakan siapkan pembayaran saat barang diantar ke rumah Anda.</p>
+>>>>>>> e4dbfbc (update fitur filtering data)
       <% } else { %>
         <p class="text-lg text-red-600">Metode pembayaran tidak valid!</p>
       <% } %>
     </div>
   </div>
+<<<<<<< HEAD
 </body>
 </html>
+=======
+  <div class="text-center mt-8">
+    <a href="/user/pesanan" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Pesanan Saya</a>
+  </div>
+</body>
+</html>
+
+>>>>>>> e4dbfbc (update fitur filtering data)

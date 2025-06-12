@@ -5,6 +5,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Checkout Page</title>
+<<<<<<< HEAD
+=======
+    <script src="https://cdn.tailwindcss.com"></script>
+>>>>>>> e4dbfbc (update fitur filtering data)
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -111,6 +115,10 @@
     <div class="section">
       <h3>Produk</h3>
       <% if (produkList && produkList.length > 0) { %>
+<<<<<<< HEAD
+=======
+        <% let total = 0; %>
+>>>>>>> e4dbfbc (update fitur filtering data)
         <% produkList.forEach(function(produk) { %>
           <div class="product">
             <img src="<%= produk.foto %>" alt="<%= produk.nama_produk %>" />
@@ -118,8 +126,12 @@
               <strong>
                 <%= produk.nama_produk %>
               </strong>
+<<<<<<< HEAD
               <div>Jumlah: 1</div>
               <div>Harga: Rp<%= produk.harga.toLocaleString('id-ID') %></div>
+=======
+              <div>Harga: Rp<%= produk.harga %></div>
+>>>>>>> e4dbfbc (update fitur filtering data)
             </div>
           </div>
           <% }) %>
@@ -144,6 +156,7 @@
 
     <div class="section summary">
       <h3>Ringkasan Pembayaran</h3>
+<<<<<<< HEAD
       <div class="summary-item">
         <span>Subtotal</span>
         <span>Rp<%= typeof total !== 'undefined' ? Number(total).toLocaleString('id-ID') : '0' %></span>
@@ -152,16 +165,46 @@
         <strong>Total</strong>
         <strong>
           Rp<%= typeof total !== 'undefined' ? Number(total).toLocaleString('id-ID') : '0' %>
+=======
+      <br>
+      <div class="summary-item">
+        <strong>Total</strong>
+        <strong>
+          Rp<%= Number(total).toLocaleString('id-ID') %>
+>>>>>>> e4dbfbc (update fitur filtering data)
         </strong>
       </div>
   <% if (produkList && produkList.length > 0) { %>
     <% produkList.forEach(function(produk) { %>
+<<<<<<< HEAD
       <input type="hidden" name="produk_id" value="<%= produk.id_produk %>">
     <% }) %>
     <input type="hidden" name="total" value="<%= typeof total !== 'undefined' ? Number(total) : 0 %>">
     <input type="hidden" name="id_user" value="<%= typeof userId !== 'undefined' ? userId : '' %>">
     <input type="hidden" name="tanggal" value="<%= new Date().toISOString().split('T')[0] %>">
     <input type="hidden" name="status_pembayaran" value="pending">
+=======
+      <input type="hidden" name="id_produk" value="<%= produk.id_produk %>">
+    <% }) %>
+    <input type="hidden" name="total" value="<%= Number(total) %>">
+    <input type="hidden" name="id_user" value="<%= typeof userId !== 'undefined' ? userId : '' %>">
+    <input type="hidden" name="tanggal" id="tanggal" value="">
+    <script>
+      function updateDateTime() {
+        const now = new Date();
+        const hari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'][now.getDay()];
+        const tanggal = now.getDate();
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'][now.getMonth()];
+        const tahun = now.getFullYear();
+        const formattedDate = `${hari} ${tanggal} ${bulan} ${tahun}`;
+        document.getElementById('tanggal').value = formattedDate;
+      }
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
+    </script>
+    <input type="hidden" name="status_pembayaran" value="pending">
+    <input type="hidden" name="harga" value="<%= Number(total) %>">
+>>>>>>> e4dbfbc (update fitur filtering data)
     <input type="hidden" name="status" value="belum bayar">
     <input type="hidden" name="alamat" value="-">
     <input type="hidden" name="resi" value="-">
