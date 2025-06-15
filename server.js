@@ -196,13 +196,10 @@ app.post("/admin/produk/tambah", async (req, res) => {
     }
     try {
       await db.query(
-<<<<<<< HEAD
         "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang, kategori, deskripsi) VALUES ($1, $2, $3, $4)",
         [name, `/img/${fotoName}`, harga, jumlah_produk]
-=======
         "INSERT INTO produk (nama_produk, foto, harga, jumlah_barang, kategori, deskripsi) VALUES ($1, $2, $3, $4, $5, $6)",
         [name, `/img/${fotoName}`, harga, jumlah_produk, kategori, deskripsi]
->>>>>>> e4dbfbc (update fitur filtering data)
       );
       res.redirect("/admin/produk?success=true");
     } catch (err) {
@@ -381,7 +378,6 @@ app.get("/", async (req, res) => {
     console.error("Error querying database:", err);
     res.status(500).json({ error: "Error while querying database" });
   }
-<<<<<<< HEAD
 });
 app.get("/produk/:id_produk", async (req, res) => {
   if (!req.session.userId || req.session.role !== "user") {
@@ -453,8 +449,6 @@ app.post("/bayar", async (req, res) => {
     console.log("Gagal bayar:", err);
     res.status(500).json({ error: "Gagal bayar" });
   }
-=======
->>>>>>> e4dbfbc (update fitur filtering data)
 });
 app.get("/produk/:id_produk", async (req, res) => {
   if (!req.session.userId || req.session.role !== "user") {
@@ -689,22 +683,15 @@ app.get("/landing", async (req, res) => {
       users: user,
       message: null,
       keranjangList,
-<<<<<<< HEAD
       produkList
-=======
-      produkList,
->>>>>>> e4dbfbc (update fitur filtering data)
     });
   } catch (err) {
     console.error("Error querying database:", err);
     res.status(500).json({ error: "Error while querying database" });
   }
 });
-<<<<<<< HEAD
 app.get("/produk", async (req, res) => {
-=======
 app.get("/users/search", async (req, res) => {
->>>>>>> e4dbfbc (update fitur filtering data)
   if (!req.session.userId || req.session.role !== "user") {
     return res.redirect("/login");
   }
@@ -714,8 +701,6 @@ app.get("/users/search", async (req, res) => {
       return res.status(404).json({ error: "User  not found" });
     }
     const user = result.rows[0];
-<<<<<<< HEAD
-=======
     const { search } = req.query;
     const produkResult = await db.query(
       "SELECT * FROM produk WHERE nama_produk ILIKE '%' || $1 || '%' OR kategori ILIKE '%' || $1 || '%' ORDER BY nama_produk ASC",
@@ -751,7 +736,6 @@ app.get("/produk", async (req, res) => {
       return res.status(404).json({ error: "User  not found" });
     }
     const user = result.rows[0];
->>>>>>> e4dbfbc (update fitur filtering data)
     res.render("user/produk", { users: user, message: null });
   } catch (err) {
     res.status(500).json({ error: "Error querying database" });
