@@ -179,26 +179,15 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-      // Tampilkan pesan jika ada
-      <% if (typeof message !== "undefined" && message) { %>
-        Swal.fire({
-          icon: 'warning',
-          title: 'Perhatian!',
-          text: "<%= message %>",
-          confirmButtonText: 'OK',
-        });
-      <% } %>
-      // Alert jika data berhasil disimpan
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("success") === "true") {
-        Swal.fire({
-          icon: 'success',
-          title: 'Berhasil!',
-          text: 'Data berhasil disimpan!',
-          confirmButtonText: 'OK',
-        });
-      }
-    </script>
+  <% if (typeof message !== 'undefined' && message.text) { %>
+    Swal.fire({
+      icon: '<%= message.type === "success" ? "success" : "error" %>',
+      title: '<%= message.type === "success" ? "Berhasil!" : "Gagal!" %>',
+      text: '<%= message.text %>',
+      confirmButtonText: 'OK',
+    });
+  <% } %>
+</script>
   </body>
 </html>
 

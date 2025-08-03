@@ -15,9 +15,9 @@
       <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" data-widget="pushmenu" href="#" role="button"
-              ><i class="fas fa-bars"></i
-            ></a>
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+              <i class="fas fa-bars"></i>
+            </a>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -55,9 +55,9 @@
               />
             </div>
             <div class="info">
-              <a href="#" class="d-block"
-                ><%= users.name ? users.name : 'Guest' %></a
-              >
+              <a href="#" class="d-block">
+                <%= users.name ? users.name : 'Guest' %>
+              </a>
             </div>
           </div>
           <nav class="mt-2">
@@ -67,7 +67,7 @@
               role="menu"
             >
               <li class="nav-item">
-                <a href="/admin/landing" class="nav-link active">
+                <a href="/admin/landing" class="nav-link">
                   <i class="nav-icon fas fa-home"></i>
                   <p>Home</p>
                 </a>
@@ -85,8 +85,8 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/history" class="nav-link">
-                  <i class="nav-icon fas fa-book"></i>
+                <a href="/admin/history" class="nav-link active">
+                  <i class="nav-icon fas fa-history"></i>
                   <p>History Pembelian</p>
                 </a>
               </li>
@@ -103,6 +103,13 @@
               <div class="col-sm-6">
                 <h1 class="m-0">Edit History Pembelian</h1>
               </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="/admin/landing">Home</a></li>
+                  <li class="breadcrumb-item"><a href="/admin/history">History</a></li>
+                  <li class="breadcrumb-item active">Edit</li>
+                </ol>
+              </div>
             </div>
           </div>
         </div>
@@ -118,40 +125,81 @@
                   <form action="/admin/history/<%= history.id %>/edit" method="post">
                     <div class="card-body">
                       <div class="form-group">
-                        <label>Status</label>
-                        <select class="form-control" name="status" required>
-                          <option value="belum bayar" <%= history.status === 'belum bayar' ? 'selected' : '' %>>Belum Bayar</option>
-                          <option value="sudah di bayar" <%= history.status === 'sudah di bayar' ? 'selected' : '' %>>Sudah di Bayar</option>
-                          <option value="sedang dikemas" <%= history.status === 'sedang dikemas' ? 'selected' : '' %>>Sedang di Kemas</option>
-                          <option value="dikirim" <%= history.status === 'dikirim' ? 'selected' : '' %>>Dikirim</option>
+                        <label for="status">Status</label>
+                        <select class="form-control" name="status" id="status" required>
+                          <option value="belum bayar" <%= history.status === 'belum bayar' ? 'selected' : '' %>>
+                            Belum Bayar
+                          </option>
+                          <option value="sudah di bayar" <%= history.status === 'sudah di bayar' ? 'selected' : '' %>>
+                            Sudah di Bayar
+                          </option>
+                          <option value="sedang dikemas" <%= history.status === 'sedang dikemas' ? 'selected' : '' %>>
+                            Sedang di Kemas
+                          </option>
+                          <option value="dikirim" <%= history.status === 'dikirim' ? 'selected' : '' %>>
+                            Dikirim
+                          </option>
                         </select>
                       </div>
                       <div class="form-group">
-                        <label>Resi</label>
+                        <label for="resi">Resi</label>
                         <input
                           type="text"
                           class="form-control"
                           name="resi"
-                          value="<%= history.resi %>"
+                          id="resi"
+                          value="<%= history.resi || '' %>"
+                          placeholder="Masukkan nomor resi"
                         />
                       </div>
                       <div class="form-group">
-                        <label>Jasa Pengiriman</label>
+                        <label for="jasa_pengiriman">Jasa Pengiriman</label>
                         <input
                           type="text"
                           class="form-control"
                           name="jasa_pengiriman"
-                          value="<%= history.jasa_pengiriman %>"
+                          id="jasa_pengiriman"
+                          value="<%= history.jasa_pengiriman || '' %>"
+                          placeholder="Masukkan jasa pengiriman"
                         />
                       </div>
                     </div>
                     <div class="card-footer">
                       <button type="submit" class="btn btn-primary">
-                        Simpan
+                        <i class="fas fa-save"></i> Simpan
                       </button>
-                      <a href="/history" class="btn btn-secondary">Batal</a>
+                      <!-- FIXED: Changed href from "edit_history.ejs" to proper route -->
+                      <a href="/admin/history" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Batal
+                      </a>
                     </div>
                   </form>
+                </div>
+              </div>
+              
+              <!-- Optional: Add info card -->
+              <div class="col-md-4">
+                <div class="card card-info">
+                  <div class="card-header">
+                    <h3 class="card-title">Informasi</h3>
+                  </div>
+                  <div class="card-body">
+                    <p><strong>ID History:</strong> <%= history.id %></p>
+                    <p><strong>Status Saat Ini:</strong> 
+                      <span class="badge badge-<%= 
+                        history.status === 'belum bayar' ? 'danger' : 
+                        history.status === 'sudah di bayar' ? 'warning' : 
+                        history.status === 'sedang dikemas' ? 'info' : 
+                        'success' 
+                      %>">
+                        <%= history.status %>
+                      </span>
+                    </p>
+                    <hr>
+                    <small class="text-muted">
+                      Pastikan untuk mengisi nomor resi dan jasa pengiriman ketika status sudah "Dikirim"
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,5 +208,12 @@
       </div>
       <!-- /.content-wrapper -->
     </div>
+
+    <!-- jQuery -->
+    <script src="/plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="/dist/js/adminlte.min.js"></script>
   </body>
 </html>

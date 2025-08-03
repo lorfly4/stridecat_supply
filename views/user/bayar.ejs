@@ -1,58 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bayar</title>
-<<<<<<< HEAD
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet"/>
-  <style>
-    body { font-family: 'Montserrat', sans-serif; }
-    .payment-info { margin-top: 20px; }
-  </style>
-</head>
-<body class="bg-white text-gray-900">
-  <div class="container mx-auto px-4 py-16">
-    <h1 class="text-3xl font-extrabold text-center">Pembayaran</h1>
-    <div class="payment-info text-center">
-      <% if (metode_pembayaran === 'gopay') { %>
-        <p class="text-lg">Silakan transfer ke nomor GoPay berikut:</p>
-        <div class="text-xl font-bold">0857-XXXX-XXXX</div>
-      <% } else if (metode_pembayaran === 'bca') { %>
-        <p class="text-lg">Silakan transfer ke rekening BCA berikut:</p>
-        <div class="text-xl font-bold">123-456-7890</div>
-=======
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-white text-gray-900">
-  <div class="max-w-md mx-auto p-8 mt-8 bg-white rounded-lg shadow-lg">
-    <div class="text-center">
-      <% if (metode_pembayaran === 'gopay' || metode_pembayaran === 'shopeepay') { %>
-        <p class="text-lg">Silakan transfer ke nomor <%= metode_pembayaran.charAt(0).toUpperCase() + metode_pembayaran.slice(1) %> berikut:</p>
-        <div class="text-2xl font-bold">0857-XXXX-XXXX</div>
-              <h1 class="text-4xl font-bold">Total Bayar: Rp<%= totalBayar.toLocaleString('id-ID') %></h1>
+  <!DOCTYPE html>
+  <html lang="id">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Invoice Checkout</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 p-6">
+      <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg">
+        <div class="text-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-800">INVOICE</h1>
+          <p class="text-sm text-gray-500">Terima kasih atas pesanan Anda</p>
+          <% if (invoice) { %>
+            <div class="text-xs text-gray-400">No. Invoice: <%= invoice %></div>
+          <% } %>
+        </div>
 
-      <% } else if (metode_pembayaran === 'transfer bank' || metode_pembayaran === 'bca') { %>
-        <p class="text-lg">Silakan transfer ke rekening berikut:</p>
-        <div class="text-2xl font-bold">123-456-7890 (BCA)</div>
-      <h1 class="text-4xl font-bold">Total Bayar: Rp<%= totalBayar.toLocaleString('id-ID') %></h1>
-      <% } else if (metode_pembayaran === 'cod (bayar di tempat)') { %>
-        <p class="text-lg text-green-600">Silakan siapkan pembayaran saat barang diantar ke rumah Anda.</p>
->>>>>>> e4dbfbc (update fitur filtering data)
-      <% } else { %>
-        <p class="text-lg text-red-600">Metode pembayaran tidak valid!</p>
-      <% } %>
-    </div>
-  </div>
-<<<<<<< HEAD
-</body>
-</html>
-=======
-  <div class="text-center mt-8">
-    <a href="/user/pesanan" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Pesanan Saya</a>
-  </div>
-</body>
-</html>
+        <div class="mb-4">
+          <h2 class="text-gray-700 font-semibold mb-2">Barang yang Dibeli:</h2>
+          <ul class="text-gray-600 list-disc pl-5 space-y-1">
+            <% if (produkList && produkList.length > 0) { %>
+              <% produkList.forEach(function(produk) { %>
+                <li><%= produk.nama_produk %> - Rp <%= produk.harga.toLocaleString('id-ID') %></li>
+              <% }) %>
+            <% } else { %>
+              <li>Tidak ada produk.</li>
+            <% } %>
+          </ul>
+        </div>
 
->>>>>>> e4dbfbc (update fitur filtering data)
+        <div class="mb-4">
+          <h2 class="text-gray-700 font-semibold">Total Harga:</h2>
+          <p class="text-lg font-bold text-green-600">Rp <%= totalBayar.toLocaleString('id-ID') %></p>
+        </div>
+
+        <div class="mb-4">
+          <h2 class="text-gray-700 font-semibold">Silakan Transfer ke:</h2>
+          <div class="bg-gray-100 p-4 rounded-lg text-sm text-gray-700">
+            <p><strong>Bank:</strong> BCA</p>
+            <p><strong>Nomor Rekening:</strong> 1234567890</p>
+            <p><strong>Atas Nama:</strong> PT Contoh Store</p>
+          </div>
+        </div>
+
+        <div class="text-sm text-gray-500 mt-6 border-t pt-4 text-center">
+          <p>Invoice ini sah tanpa tanda tangan.</p>
+        </div>
+      </div>
+    </body>
+  </html>

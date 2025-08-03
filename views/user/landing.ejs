@@ -46,8 +46,8 @@
   <header class="border-b border-gray-200">
     <div class="container mx-auto px-4 flex items-center justify-between py-4">
       <a class="flex items-center space-x-2" href="#">
-        <img alt="Twone Vape logo with stylized text and vape icon" class="h-12 w-auto" height="50"
-          src="https://storage.googleapis.com/a1aa/image/2309b1be-cc9a-4356-5dfe-5d0f739b764a.jpg" width="150" />
+        <img alt="logo  " class="h-12 w-auto" height="50"
+          src="img/logo.png" width="150" />
       </a>
       <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
         <a class="hover:text-red-600 transition" href="#"> Home </a>
@@ -81,10 +81,7 @@
         <div id="accountMenu"
           class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
           <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
-<<<<<<< HEAD
-=======
           <a href="/user/pesanan" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Pesanan</a>
->>>>>>> e4dbfbc (update fitur filtering data)
         </div>
       </div>
       <script>
@@ -187,11 +184,7 @@
                 </h3>
               </form>
               <p class="text-red-600 font-bold text-xl mb-4">
-<<<<<<< HEAD
                 <%= product.harga %>
-=======
-                Rp <%= product.harga.toLocaleString('id-ID') %>
->>>>>>> e4dbfbc (update fitur filtering data)
               </p>
               <form action="/keranjang/tambah/<%= product.id_produk %>" method="post">
                 <button type="submit"

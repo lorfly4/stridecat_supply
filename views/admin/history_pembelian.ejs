@@ -130,6 +130,35 @@
                     </tr>
                   </thead>
                   <tbody>
+                    <form action="/admin/history/cari" method="get">
+                      <div class="form-group row">
+                        <div class="col-sm-4">
+                          <label for="tanggal_mulai">Tanggal Mulai</label>
+                          <input
+                            type="date"
+                            class="form-control"
+                            id="tanggal_mulai"
+                            name="tanggal_mulai"
+                            value="<%= typeof tanggal_mulai !== 'undefined' ? tanggal_mulai : '' %>"
+                          />
+                        </div>
+                        <div class="col-sm-4">
+                          <label for="tanggal_akhir">Tanggal Akhir</label>
+                          <input
+                            type="date"
+                            class="form-control"
+                            id="tanggal_akhir"
+                            name="tanggal_akhir"
+                            value="<%= typeof tanggal_akhir !== 'undefined' ? tanggal_akhir : '' %>"
+                          />
+                        </div>
+                        <div class="col-sm-4">
+                          <button type="submit" class="btn btn-primary mt-4">
+                            Cari
+                          </button>
+                        </div>
+                      </div>
+                    </form>
                     <% if (history && history.length > 0) { %> <%
                     history.forEach(function(item, idx) { %>
                     <tr>
@@ -139,7 +168,10 @@
                       <td>Rp <%= item.harga.toLocaleString("id-ID") %></td>
                       <td><img src="<%= item.foto %>" width="80" /></td>
                       <td><%= item.status %></td>
-                      <td><%= item.tanggal %></td>
+                      <td>
+                        <% const tanggal = new Date(item.tanggal); %>
+                        <%= tanggal.getDate() %> <%= ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][tanggal.getMonth()] %> <%= tanggal.getFullYear() %>
+                      </td>
                       <td>
                         <button
                           class="btn btn-info btn-sm"
@@ -195,6 +227,9 @@
 
                               <dt class="col-sm-4">Tanggal</dt>
                               <dd class="col-sm-8"><%= item.tanggal %></dd>
+
+                              <dt class="col-sm-4">Tanggal</dt>
+                              <dd class="col-sm-8"><%= item.alamat%></dd>
 
                               <dt class="col-sm-4">Foto Produk</dt>
                               <dd class="col-sm-8">

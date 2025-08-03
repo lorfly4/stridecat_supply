@@ -1,230 +1,157 @@
+<!DOCTYPE html>
 <html lang="en">
- <head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>
-   Shopee Cart
-  </title>
-  <script src="https://cdn.tailwindcss.com">
-  </script>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Keranjang - Stridecat Supply</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-  <style>
-   /* Custom scrollbar for the container */
-    .scrollbar-thin::-webkit-scrollbar {
-      width: 6px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      background-color: #d1d5db;
-      border-radius: 10px;
-    }
-  </style>
- </head>
- <body class="bg-[#f5f5f7] font-sans text-[13px] text-[#222222]">
-    <header class="border-b border-gray-200">
-    <div class="container mx-auto px-4 flex items-center justify-between py-4">
-      <a class="flex items-center space-x-2" href="#">
-        <img alt="Twone Vape logo with stylized text and vape icon" class="h-12 w-auto" height="50"
-          src="https://storage.googleapis.com/a1aa/image/2309b1be-cc9a-4356-5dfe-5d0f739b764a.jpg" width="150" />
-      </a>
-      <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
-        <a class="hover:text-red-600 transition" href="/landing"> Home </a>
-        <a class="hover:text-red-600 transition" href="/landing#products"> Products </a>
-      </nav>
-      <div class="hidden md:flex items-center space-x-4">
-        <button aria-label="Search" class="text-gray-700 hover:text-red-600 transition focus:outline-none">
-          <i class="fas fa-search text-lg"> </i>
-        </button>
-        <button aria-label="Shopping Cart"
-        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
-        <a class="fas fa-shopping-cart text-lg" href="/keranjang"> </a>
-        <span
-        class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-        <%= keranjangList ? keranjangList.length : 0 %>
-    </span>
-</button>
-<div class="relative"></div>
-    <button aria-label="User Account" class="text-gray-700 hover:text-red-600 transition focus:outline-none flex items-center space-x-2" onclick="toggleMenu()" type="button">
-        <i class="fas fa-user text-lg"></i>
-        <span><%= users && users.name ? users.name : 'Account' %></span>
-        <i class="fas fa-caret-down ml-1"></i>
-    </button>
-    <div id="accountMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
-        <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
-    </div>
-</div>
-<script>
-    function toggleMenu() {
-        const menu = document.getElementById('accountMenu');
-        menu.classList.toggle('hidden');
-    }
-    // Close menu when clicking outside
-    document.addEventListener('click', function (e) {
-        const btn = document.querySelector('[onclick="toggleMenu()"]');
-        const menu = document.getElementById('accountMenu');
-        if (!btn.contains(e.target) && !menu.contains(e.target)) {
-            menu.classList.add('hidden');
-        }
-    });
-</script>
-      </div>
-      <button aria-label="Toggle menu" class="md:hidden text-gray-700 hover:text-red-600 focus:outline-none"
-        id="mobile-menu-button">
-        <i class="fas fa-bars text-2xl"> </i>
-      </button>
-    </div>
-    <!-- Mobile Menu -->
-    <nav aria-label="Mobile menu" class="hidden md:hidden bg-white border-t border-gray-200" id="mobile-menu">
-      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
-        href="/">
-        Home
-      </a>
-      <a class="block px-4 py-3 border-b border-gray-200 font-semibold text-gray-700 hover:bg-red-50 hover:text-red-600"
-        href="#products">
-        Products
-      </a>
-        <script>
-          function toggleMenu() {
-            const menu = document.getElementById('accountMenu');
-            menu.classList.toggle('hidden');
-          }
+</head>
+<body class="bg-[#f5f5f7] font-sans text-[13px] text-[#222222]">
 
-          // Close menu when clicking outside
-          document.addEventListener('click', function (e) {
-            const btn = document.querySelector('[onclick="toggleMenu()"]');
-            const menu = document.getElementById('accountMenu');
-            if (!btn.contains(e.target) && !menu.contains(e.target)) {
-              menu.classList.add('hidden');
-            }
-          });
-        </script>
-
-      </div>
-      <button aria-label="Shopping Cart"
-        class="text-gray-700 hover:text-red-600 transition focus:outline-none relative">
-        <i class="fas fa-shopping-cart text-lg"> </i>
-        <span
-          class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-          2
-        </span>
-      </button>
-      </div>
+<header class="border-b border-gray-200">
+  <div class="container mx-auto px-4 flex items-center justify-between py-4">
+    <a class="flex items-center space-x-2" href="/landing">
+      <img src="/img/logo.png" alt="Logo" class="h-12" />
+    </a>
+    <nav class="hidden md:flex space-x-8 font-semibold text-gray-700">
+      <a href="/landing" class="hover:text-red-600 transition">Home</a>
+      <a href="/landing#products" class="hover:text-red-600 transition">Products</a>
     </nav>
-  </header>
-  <div class="max-w-[1280px] mx-auto px-4">
-   <div class="pt-4 border border-t-0 border-l-0 border-r-0 border-[#d1d5db] flex items-center gap-2">
-    <span class="text-[13px] font-semibold flex items-center gap-1">
-     Stridecat Supply
-   </div>
-   <div class="space-y-4 mt-4">
-    <!-- First product group -->
-<form id="checkoutForm" action="/checkout" method="get">
-  <% for (const produk of keranjangList) { %>
-    <div class="bg-white border border-[#e5e7eb] rounded-sm p-4 flex flex-col sm:flex-row sm:items-center sm:gap-4">
-      <input
-        class="w-4 h-4 border border-[#d1d5db] mb-2 sm:mb-0 item-checkbox"
-        type="checkbox"
-        name="produk_id"
-        value="<%= produk.id_produk %>"
-        data-harga="<%= produk.harga %>"
-        data-nama="<%= produk.nama_produk %>"
-        data-jumlah="1"
-      />
-      <img alt="<%= produk.nama_produk %>" class="w-[80px] h-[80px] object-contain" height="80" src="<%= produk.foto %>" width="80"/>
-      <div class="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-        <div class="flex-1 min-w-0">
-          <p class="text-[13px] leading-tight truncate">
-            <%= produk.nama_produk %>
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-2 sm:gap-4 whitespace-nowrap">
-          <div class="text-[13px] font-semibold">
-            Rp<%= produk.harga %>
-          </div>
+    <div class="flex items-center space-x-4">
+      <a href="/keranjang" class="relative text-gray-700 hover:text-red-600">
+        <i class="fas fa-shopping-cart text-lg"></i>
+        <span class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+          <%= keranjangList.length %>
+        </span>
+      </a>
+      <div class="relative">
+        <button onclick="toggleMenu()" class="flex items-center text-gray-700 hover:text-red-600 space-x-1">
+          <i class="fas fa-user text-lg"></i>
+          <span><%= users.name %></span>
+          <i class="fas fa-caret-down ml-1"></i>
+        </button>
+        <div id="accountMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded shadow-lg hidden z-50">
+          <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600">Logout</a>
         </div>
       </div>
     </div>
-  <% } %>
-  <!-- Bottom voucher and footer -->
-  <div class="mt-6 border border-t-0 border-l-0 border-r-0 border-[#d1d5db] bg-white">
-    <div class="flex flex-wrap items-center gap-2 px-4 py-3 text-[13px] text-[#6b7280]">
-      <input class="w-4 h-4 border border-[#d1d5db]" type="checkbox" id="selectAll"/>
-      <span class="whitespace-nowrap">
-        Pilih Semua (<span id="jumlahProduk">0</span>)
-      </span>
-      <div class="ml-auto text-[#3498db] text-right whitespace-nowrap"></div>
-      <div class="text-[#222222] whitespace-nowrap">
-        Total (<span id="totalProduk">0</span> produk):
-        <span class="text-[#3498db] font-semibold text-[18px]" id="totalHarga">
-          Rp0
-        </span>
+  </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 mt-6">
+
+  <% for (const produk of keranjangList) { %>
+  <div class="bg-white rounded-sm p-4 mb-3 border flex items-center gap-4">
+    <form action="/keranjang/hapus/<%= produk.id_keranjang %>" method="POST" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+      <button type="submit" class="text-red-600 hover:underline text-sm mr-4">🗑️</button>
+    </form>
+
+    <input type="checkbox" name="produk_id" value="<%= produk.id_produk %>"
+           class="item-checkbox w-4 h-4"
+           data-harga="<%= produk.harga %>" data-jumlah="<%= produk.jumlah %>" />
+
+    <img src="<%= produk.foto %>" alt="<%= produk.nama_produk %>" class="w-20 h-20 object-contain" />
+
+    <div class="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+      <div>
+        <p class="font-semibold"><%= produk.nama_produk %></p>
+        <p class="text-gray-600">Rp<%= produk.harga.toLocaleString("id-ID") %></p>
+        <p class="text-gray-500">Jumlah: <%= produk.jumlah %></p>
       </div>
-      <button type="submit" class="bg-[#3498db] text-white px-6 py-2 rounded text-[13px] font-semibold whitespace-nowrap" id="checkoutBtn">
+    </div>
+  </div>
+<% } %>
+
+  <!-- Form checkout hanya di bagian bawah -->
+  <form id="checkoutForm" action="/checkout" method="get">
+    <div class="bg-white px-4 py-3 flex flex-wrap items-center gap-2 border-t">
+      <input type="checkbox" id="selectAll" class="w-4 h-4">
+      <label for="selectAll" class="mr-auto text-sm">Pilih Semua (<span id="jumlahProduk">0</span>)</label>
+
+      <div class="text-sm text-gray-600">Total (<span id="totalProduk">0</span> produk):</div>
+      <div class="text-[#3498db] font-semibold text-[18px]" id="totalHarga">Rp0</div>
+
+      <button type="submit" class="bg-[#3498db] text-white px-6 py-2 rounded text-sm font-semibold">
         Checkout
       </button>
     </div>
-  </div>
-</form>
-  </div>
-  <script>
-function calculateTotal() {
-  const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-  let jumlahProduk = 0;
-  let totalHarga = 0;
-  checkboxes.forEach(cb => {
-    const harga = parseInt(cb.getAttribute('data-harga')) || 0;
-    const jumlah = parseInt(cb.getAttribute('data-jumlah')) || 1;
-    jumlahProduk += jumlah;
-    totalHarga += harga * jumlah;
+  </form>
+
+</main>
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('accountMenu');
+    menu.classList.toggle('hidden');
+  }
+
+  document.addEventListener('click', function(e) {
+    const btn = document.querySelector('[onclick="toggleMenu()"]');
+    const menu = document.getElementById('accountMenu');
+    if (!btn.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.add('hidden');
+    }
   });
-  document.getElementById('jumlahProduk').textContent = jumlahProduk;
-  document.getElementById('totalProduk').textContent = jumlahProduk;
-  document.getElementById('totalHarga').textContent = `Rp${totalHarga.toLocaleString('id-ID')}`;
-}
 
-// Event listener untuk semua checkbox produk
-document.querySelectorAll('.item-checkbox').forEach(cb => {
-  cb.addEventListener('change', calculateTotal);
-});
+  function calculateTotal() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    let jumlah = 0;
+    let total = 0;
+    checkboxes.forEach(cb => {
+      const harga = parseInt(cb.getAttribute('data-harga')) || 0;
+      const qty = parseInt(cb.getAttribute('data-jumlah')) || 1;
+      jumlah += qty;
+      total += harga * qty;
+    });
+    document.getElementById('jumlahProduk').textContent = jumlah;
+    document.getElementById('totalProduk').textContent = jumlah;
+    document.getElementById('totalHarga').textContent = `Rp${total.toLocaleString('id-ID')}`;
+  }
 
-// Event listener untuk "Pilih Semua"
-document.getElementById('selectAll').addEventListener('change', function() {
-  const checked = this.checked;
   document.querySelectorAll('.item-checkbox').forEach(cb => {
-    cb.checked = checked;
+    cb.addEventListener('change', calculateTotal);
   });
-  calculateTotal();
-});
 
-// Validasi sebelum submit
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+  document.getElementById('selectAll').addEventListener('change', function() {
+    const check = this.checked;
+    document.querySelectorAll('.item-checkbox').forEach(cb => {
+      cb.checked = check;
+    });
+    calculateTotal();
+  });
+
+  document.getElementById('checkoutForm').addEventListener('submit', function(e) {
   const checked = document.querySelectorAll('.item-checkbox:checked');
   if (checked.length === 0) {
-    alert('Pilih minimal satu produk untuk checkout!');
     e.preventDefault();
-    return false;
+    alert('Pilih minimal satu produk untuk checkout!');
+    return;
   }
-  // Tambahkan total harga ke parameter GET
-  let totalHarga = 0;
+
+  let total = 0;
   checked.forEach(cb => {
     const harga = parseInt(cb.getAttribute('data-harga')) || 0;
-    const jumlah = parseInt(cb.getAttribute('data-jumlah')) || 1;
-    totalHarga += harga * jumlah;
+    const qty = parseInt(cb.getAttribute('data-jumlah')) || 1;
+    total += harga * qty;
+
+    // ✅ Tambahkan input tersembunyi untuk setiap id_produk yang dicentang
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'produk_id[]';
+    input.value = cb.value;
+    e.target.appendChild(input);
   });
-  // Tambahkan input hidden untuk total harga
-  let input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = 'total';
-  input.value = totalHarga;
-  this.appendChild(input);
+
+  const totalInput = document.createElement('input');
+  totalInput.type = 'hidden';
+  totalInput.name = 'total';
+  totalInput.value = total;
+  this.appendChild(totalInput);
 });
 
-calculateTotal();
+
+  calculateTotal();
 </script>
-  <!-- Chat button bottom right -->
-  <button class="fixed bottom-4 right-4 bg-[#3498db] text-white px-4 py-2 rounded flex items-center gap-2 shadow-lg text-[13px] font-semibold">
-   <a class="fas fa-comment-alt"  href="https://api.whatsapp.com/send?phone=6285163706606&text=test">
-       Chat
-   </a>
-  </button>
- </body>
+</body>
 </html>
